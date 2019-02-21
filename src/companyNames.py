@@ -1,3 +1,4 @@
+import os
 import requests 
 from bs4 import BeautifulSoup
 
@@ -16,7 +17,16 @@ class CompanyNames(object):
         for i in range(0, len(rawThickers)):
             company = rawThickers[i].text
             self.thickers.append(company)
-        print(self.thickers)
         return(self.thickers)
+
+    def createDirectory(self):
+        for dic in self.thickers:
+            try: 
+                os.mkdir("Companies/"+ dic )
+            except OSError:
+                print("Creation of the directory %s failed" % dic)
+            else:
+                print("Successfully created the directory %s " % dic)
+
 
 

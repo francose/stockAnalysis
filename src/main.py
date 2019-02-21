@@ -8,9 +8,8 @@ except:
 
 #%%
 '''
-pseudo code testing...
+author : Sadik Erisen
 '''
-
 from companyNames import CompanyNames
 
 ENDPOINTS = ["https://finance.yahoo.com/quote/",
@@ -18,8 +17,9 @@ ENDPOINTS = ["https://finance.yahoo.com/quote/",
 
 
 def main():
-    name = CompanyNames(ENDPOINTS[1])
-    name.getNames()
+    Companies = CompanyNames(ENDPOINTS[1])
+    Companies.getNames()
+    Companies.createDirectory()
 
 
 if __name__=='__main__':
