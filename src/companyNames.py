@@ -19,14 +19,15 @@ class CompanyNames(object):
             self.thickers.append(company)
         return(self.thickers)
 
-    def createDirectory(self):
-        for dic in self.thickers:
+    def createDirectory(self, company="Companies/"):
+        for dr in self.thickers:
             try: 
-                os.mkdir("Companies/"+ dic )
+                os.mkdir(company + dr)
+                open(company + dr + "/"+ dr +".html", "w")
             except OSError:
-                print("Creation of the directory %s failed" % dic)
+                print("Creation of the directory %s failed" % dr)
             else:
-                print("Successfully created the directory %s " % dic)
+                print("Successfully created the directory %s " % dr)
 
 
 
