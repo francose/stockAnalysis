@@ -5,9 +5,10 @@ from bs4 import BeautifulSoup
 
 class CompanyNames(object):
     
-    def __init__(self, url, thickers=[]):
+    def __init__(self, url, thickers=[], content=[]):
         self.url = url
         self.thickers = thickers
+        self.content = content
 
 #gets the top 10 company thickers
     def getNames(self):
@@ -19,11 +20,15 @@ class CompanyNames(object):
             self.thickers.append(company)
         return(self.thickers)
 
+    def appendNames(self, urlList=[]):
+        LIST = [self.content.append(self.url + i + "/history?p=" + i) for i in self.thickers]
+        return(self.content)
+
     def createDirectory(self, company="Companies/"):
         for dr in self.thickers:
             try: 
                 os.mkdir(company + dr)
-                open(company + dr + "/"+ dr +".html", "w")
+                open(company + dr + "/"+ dr +".html", "w+")
             except OSError:
                 print("Creation of the directory %s failed" % dr)
             else:

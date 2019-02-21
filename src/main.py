@@ -16,22 +16,17 @@ ENDPOINTS = ["https://finance.yahoo.com/quote/",
              "https://www.investopedia.com/articles/investing/053116/10-largest-holdings-sp-500-aaplamznfb.asp"]
 
 
+start = CompanyNames(ENDPOINTS[1])
+CompanyList = CompanyNames(ENDPOINTS[0])
+
 def main():
-    Companies = CompanyNames(ENDPOINTS[1])
-    Companies.getNames()
-    Companies.createDirectory()
+    start.getNames()
+    start.createDirectory()
+    CompanyList.appendNames()
 
 
 if __name__=='__main__':
     main()
-
-   
-    
-     
-  
-   
-    
-    
 
 
 #%%
