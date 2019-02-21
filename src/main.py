@@ -23,10 +23,12 @@ def main():
     start.getNames()
     start.createDirectory()
     CompanyList.appendNames()
+    CompanyList.getContent()
 
 
 if __name__=='__main__':
     main()
+
 
 
 #%%

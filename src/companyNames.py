@@ -5,10 +5,11 @@ from bs4 import BeautifulSoup
 
 class CompanyNames(object):
     
-    def __init__(self, url, thickers=[], content=[]):
+    def __init__(self, url, thickers=[], urlList=[], contentList=[]):
         self.url = url
         self.thickers = thickers
-        self.content = content
+        self.urlList = urlList
+        self.content = contentList
 
 #gets the top 10 company thickers
     def getNames(self):
@@ -21,14 +22,23 @@ class CompanyNames(object):
         return(self.thickers)
 
     def appendNames(self, urlList=[]):
-        LIST = [self.content.append(self.url + i + "/history?p=" + i) for i in self.thickers]
-        return(self.content)
+        LIST = [self.urlList.append(self.url + i + "/history?p=" + i) for i in self.thickers]
+        return(self.urlList)
+
+    def getContent(self, path="Companies/"):
+        for url in self.urlList:
+            res = requests.get(url).text
+            self.content = BeautifulSoup(res, 'html.parser')
+            for i in self.thickers:
+                with open(path + i + "/" + i + ".html", "w+") as f:
+                    f.write("test")
 
     def createDirectory(self, company="Companies/"):
         for dr in self.thickers:
-            try: 
-                os.mkdir(company + dr)
-                open(company + dr + "/"+ dr +".html", "w+")
+            try:
+                abspath = company + dr 
+                os.mkdir(abspath)
+                open(abspath + "/" + dr + ".html", "w+")
             except OSError:
                 print("Creation of the directory %s failed" % dr)
             else:
