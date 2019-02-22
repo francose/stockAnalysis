@@ -1,10 +1,10 @@
 import os
-import requests 
+import requests
 from bs4 import BeautifulSoup
 
 
 class CompanyNames(object):
-    
+
     def __init__(self, url, thickers=[], urlList=[], contentList=[]):
         self.url = url
         self.thickers = thickers
@@ -27,22 +27,21 @@ class CompanyNames(object):
 
     def getContent(self, path="Companies/"):
         for url in self.urlList:
-            res = requests.get(url).text
-            self.content = BeautifulSoup(res, 'html.parser')
+            res = requests.get(url)
+            data= res.content
+
+            self.content = BeautifulSoup(data, 'html.parser')
             for i in self.thickers:
-                with open(path + i + "/" + i + ".html", "w+") as f:
-                    f.write("test")
+                with open(path + i + "/" + i + ".csv", "w+") as f:
+                    f.writelines(str(data))
 
     def createDirectory(self, company="Companies/"):
         for dr in self.thickers:
             try:
-                abspath = company + dr 
+                abspath = company + dr
                 os.mkdir(abspath)
-                open(abspath + "/" + dr + ".html", "w+")
+                open(abspath + "/" + dr + ".csv", "w+")
             except OSError:
                 print("Creation of the directory %s failed" % dr)
             else:
                 print("Successfully created the directory %s " % dr)
-
-
-
