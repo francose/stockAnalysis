@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
+
 class CompanyNames(object):
 
     def __init__(self, url, thickers=[], urlList=[], contentList=[]):
@@ -25,16 +26,21 @@ class CompanyNames(object):
         LIST = [self.urlList.append(self.url + i + "/history?p=" + i) for i in self.thickers]
         return(self.urlList)
 
-    def getContent(self, path="Companies/"):
+    def getContent(self):
         for url in self.urlList:
             res = requests.get(url)
-            data= res.content
-
-            self.content = BeautifulSoup(data, 'html.parser')
-            for i in self.thickers:
-                with open(path + i + "/" + i + ".csv", "w+") as f:
-                    f.writelines(str(data))
-
+            data = res.content
+            raw = BeautifulSoup(data, 'html.parser')
+            tableHeader = raw.select('table > thead >tr >th')
+        self.getTableHeaders(tableHeader)
+        
+    def getTableHeaders(self, tableHeader, path="Companies/"):
+        headers = [i.text for i in tableHeader]
+        for i in self.thickers:
+            with open(path + i + "/" + i + ".csv", "w+") as f:
+                f.writelines(str(headers))
+        return(headers)
+    
     def createDirectory(self, company="Companies/"):
         for dr in self.thickers:
             try:
@@ -45,3 +51,6 @@ class CompanyNames(object):
                 print("Creation of the directory %s failed" % dr)
             else:
                 print("Successfully created the directory %s " % dr)
+
+
+ 
