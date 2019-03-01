@@ -2,6 +2,9 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import numpy as np
+
+
 
 path = "Companies/"
 headers = ['date',
@@ -51,11 +54,12 @@ class CompanyNames(object):
             data.append([ele for ele in cols if ele])
 
         dataFrame = pd.DataFrame(data, columns=headers)
-        
-     
-        for i in self.thickers:
-            with open(path + i + "/" + i + ".csv", "w+") as f:
-                f.writelines(str(dataFrame))
+
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            # print(dataFrame)
+            for i in self.thickers:
+                with open(path + i + "/" + i + ".csv", "w+") as f:
+                    f.writelines(str(dataFrame))
             
     def createDirectory(self):
         for dr in self.thickers:
