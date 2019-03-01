@@ -1,26 +1,23 @@
 import os
-import requests
+import requests, time
 from bs4 import BeautifulSoup
 import pandas as pd
-import numpy as np
-
 
 
 path = "Companies/"
-headers = ['date',
-           'open',
-           'high',
-           'low',
-           'close',
-           'adj_close',
-           'vol']
+headers = ['Date',
+           'Open',
+           'High',
+           'Low',
+           'Close',
+           'Adj Close',
+           'Vol']
 class CompanyNames(object):
 
-    def __init__(self, url, thickers=[], urlList=[], contentList=[]):
+    def __init__(self, url, thickers=[], urlList=[]):
         self.url = url
         self.thickers = thickers
         self.urlList = urlList
-        self.content = contentList
 
 #gets the top 10 company thickers
     def getNames(self):
@@ -32,8 +29,9 @@ class CompanyNames(object):
             self.thickers.append(company)
         return(self.thickers)
 
-    def appendNames(self, urlList=[]):
-        LIST = [self.urlList.append(self.url + i + "/history?p=" + i) for i in self.thickers]
+    def appendNames(self):
+        for i in self.thickers:
+            self.urlList.append(self.url + i + "/history?p=" + i)  
         return(self.urlList)
 
 
@@ -44,6 +42,7 @@ class CompanyNames(object):
             raw = BeautifulSoup(data, 'html.parser')
             tableBody = raw.findAll('table', attrs={'class': 'W(100%) M(0)'})
         self.getTableBody(tableBody[0])
+        time.sleep(1)
 
     def getTableBody(self, table, data=[]):
         table_body = table.find('tbody')
@@ -52,11 +51,8 @@ class CompanyNames(object):
             cols = row.find_all('td')
             cols = [ele.text.strip() for ele in cols]
             data.append([ele for ele in cols if ele])
-
         dataFrame = pd.DataFrame(data, columns=headers)
-
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            # print(dataFrame)
             for i in self.thickers:
                 with open(path + i + "/" + i + ".csv", "w+") as f:
                     f.writelines(str(dataFrame))
