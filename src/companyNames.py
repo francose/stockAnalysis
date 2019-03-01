@@ -1,9 +1,16 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-
+import pandas as pd
 
 path = "Companies/"
+headers = ['date',
+           'open',
+           'high',
+           'low',
+           'close',
+           'adj_close',
+           'vol']
 class CompanyNames(object):
 
     def __init__(self, url, thickers=[], urlList=[], contentList=[]):
@@ -26,31 +33,29 @@ class CompanyNames(object):
         LIST = [self.urlList.append(self.url + i + "/history?p=" + i) for i in self.thickers]
         return(self.urlList)
 
+
     def getContent(self):
         for url in self.urlList:
             res = requests.get(url)
             data = res.content
             raw = BeautifulSoup(data, 'html.parser')
-            tableBody = [ td.findAll('span') for td in raw.findAll(attrs={'data-test': 'historical-prices'})]
-        self.getTableBody(tableBody)
+            tableBody = raw.findAll('table', attrs={'class': 'W(100%) M(0)'})
+        self.getTableBody(tableBody[0])
 
-    def getTableBody(self, tableBody, history=[]):
-        table = [ history.append(table.text) for table in tableBody[0]]
-        for row in range(0, len(table[7:697])):
-            obj= {
-                'date': history[row],
-                'open': history[row],
-                'high': history[row],
-                'low': history[row],
-                'close': history[row],
-                'adj_close': history[row],
-                'vol': history[row],
-            }
-            print(obj)
+    def getTableBody(self, table, data=[]):
+        table_body = table.find('tbody')
+        rows = table_body.find_all('tr')
+        for row in rows:
+            cols = row.find_all('td')
+            cols = [ele.text.strip() for ele in cols]
+            data.append([ele for ele in cols if ele])
 
-        # for i in self.thickers:
-        #     with open(path + i + "/" + i + ".csv", "w+") as f:
-        #         f.writelines(str(tbody))
+        dataFrame = pd.DataFrame(data, columns=headers)
+        
+     
+        for i in self.thickers:
+            with open(path + i + "/" + i + ".csv", "w+") as f:
+                f.writelines(str(dataFrame))
             
     def createDirectory(self):
         for dr in self.thickers:
@@ -64,4 +69,4 @@ class CompanyNames(object):
                 print("Successfully created the directory %s " % dr)
 
 
- 
+                
