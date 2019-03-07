@@ -18,7 +18,6 @@ class CompanyNames(object):
         self.url = url
         self.thickers = thickers
         self.urlList = urlList
-        self.body = body
 
 #gets the top 10 company thickers
     def getNames(self):
@@ -35,22 +34,25 @@ class CompanyNames(object):
             self.urlList.append(self.url + i + "/history?p=" + i)  
         return(self.urlList)
 
-    def getContent(self, x=0):
+    def getURL(self, body=[]):
         for url in self.urlList:
             res = requests.get(url)
             data = res.content
-            self.body.append(data)
-            try:
-                if(len(self.body) == 9 and res.status_code == 200):
-                    for x in range (0, len(self.body)):
-                        print(len(self.body), '/' , x)
-                        # print(self.body[x], '\n\n')
-                        raw = BeautifulSoup(self.body[x], 'html.parser')
-                        tableBody = raw.findAll('table', attrs={'class': 'W(100%) M(0)'})
-                        self.getTableBody(tableBody[0])
-            except OSError: 
-                    print('ERRR')
-  
+            body.append(data)
+        return( self.getContent(body))
+         
+
+    def getContent(self, content):
+        try:
+            # if(len(self.body) == 9 and res.status_code == 200):
+            for x in range(0, len(content)):
+                print('start')
+                raw = BeautifulSoup(content[x], 'html.parser')
+                tableBody = raw.findAll('table', attrs={'class': 'W(100%) M(0)'})
+                self.getTableBody(tableBody[0])
+                print('finish \n\n')
+        except OSError: 
+                print('ERRR')
 
 
     def getTableBody(self, table, data=[]):
@@ -61,13 +63,13 @@ class CompanyNames(object):
             cols = [ele.text.strip() for ele in cols]
             data.append([ele for ele in cols if ele])
             dataFrame = pd.DataFrame(data, columns=headers)
-        print(dataFrame.head(1), "\n done....")
+        print(dataFrame.head(1))
         
-    #     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-    #         for i in self.thickers:
-                # filename = open(path + i + "/" + i + ".csv", "w")
-                # filename.write(str(dataFrame))
-                # filename.close()
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            for i in self.thickers:
+                filename = open(path + i + "/" + i + ".csv", "w")
+                filename.write(str(dataFrame))
+                filename.close()
                 # print(dataFrame.head(3))
                 # print(path + i + "/" + i + ".csv", " is done ...")
                 
