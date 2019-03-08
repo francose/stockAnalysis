@@ -1,7 +1,5 @@
-import os
-import requests, time
+import os, requests, time
 from bs4 import BeautifulSoup
-import pandas as pd
 
 
 path = "Companies/"
