@@ -5,16 +5,8 @@ import pandas as pd
 
 
 path = "Companies/"
-headers = ['Date',
-           'Open',
-           'High',
-           'Low',
-           'Close',
-           'Adj Close',
-           'Vol']
 class CompanyNames(object):
-
-    def __init__(self, url, thickers=[], urlList=[], body=[]):
+    def __init__(self, url, thickers=[], urlList=[]):
         self.url = url
         self.thickers = thickers
         self.urlList = urlList
@@ -29,62 +21,44 @@ class CompanyNames(object):
             self.thickers.append(company)
         return(self.thickers)
 
-    def appendNames(self):
+    def createDirectory(self):
+        if (os.path.exists(path)):
+             print("The directory %s checked ...  " % path)
+             time.sleep(.8)
+             for dr in self.thickers:
+                try:
+                    abspath = path + dr
+                    os.mkdir(abspath)
+                    open(abspath + "/" + dr + ".csv", "w+")
+                except OSError:
+                    print("Creation of the directory %s failed" % dr)
+                else:
+                    print("Successfully created the directory %s " % dr)
+                    time.sleep(.8)
+        else:      
+            print("The directory of %s does not exist ... now creating the directory" % path)
+            time.sleep(.8)
+            try:
+                os.makedirs(path)
+            except OSError:
+                print('failed to create the directory ... please re-run the routine again ...')
+            else:
+                print("Successfully created the directory of %s" % path)
+                time.sleep(.8)
+                self.createDirectory()    
+
+    def createURL(self):
         for i in self.thickers:
-            self.urlList.append(self.url + i + "/history?p=" + i)  
+            self.urlList.append(self.url + i + "/history?p=" + i)
         return(self.urlList)
 
-    def getURL(self, body=[]):
-        for url in self.urlList:
-            res = requests.get(url)
-            data = res.content
-            body.append(data)
-        return( self.getContent(body))
-         
-
-    def getContent(self, content):
-        try:
-            # if(len(self.body) == 9 and res.status_code == 200):
-            for x in range(0, len(content)):
-                print('start')
-                raw = BeautifulSoup(content[x], 'html.parser')
-                tableBody = raw.findAll('table', attrs={'class': 'W(100%) M(0)'})
-                self.getTableBody(tableBody[0])
-                print('finish \n\n')
-        except OSError: 
-                print('ERRR')
 
 
-    def getTableBody(self, table, data=[]):
-        table_body = table.find('tbody')
-        rows = table_body.find_all('tr')
-        for row in rows:
-            cols = row.find_all('td')
-            cols = [ele.text.strip() for ele in cols]
-            data.append([ele for ele in cols if ele])
-            dataFrame = pd.DataFrame(data, columns=headers)
-        print(dataFrame.head(1))
-        
-        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            for i in self.thickers:
-                filename = open(path + i + "/" + i + ".csv", "w")
-                filename.write(str(dataFrame))
-                filename.close()
-                # print(dataFrame.head(3))
-                # print(path + i + "/" + i + ".csv", " is done ...")
-                
 
-            
-    def createDirectory(self):
-        for dr in self.thickers:
-            try:
-                abspath = path + dr
-                os.mkdir(abspath)
-                open(abspath + "/" + dr + ".csv", "w+")
-            except OSError:
-                print("Creation of the directory %s failed" % dr)
-            else:
-                print("Successfully created the directory %s " % dr)
 
 
                 
+
+
+
+
