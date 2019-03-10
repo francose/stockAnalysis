@@ -23,7 +23,7 @@ class Scrape(object):
         else:
             self.getContent(res)
 
-    def getContent(self, res, data=[], x=0):
+    def getContent(self, res):
         data = res.content
         raw = BeautifulSoup(data, 'html.parser')
         tableBody = raw.find_all(
@@ -34,15 +34,28 @@ class Scrape(object):
             cols = row.find_all('td')
             cols = [ele.text.strip() for ele in cols]
             raw=([ele for ele in cols if ele])
-            df = pd.DataFrame(raw)
-            print(df)
-            # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            #     for i in self.thickers:
-            #         filename = open(path + i + "/" + i + ".csv", "w")
-            #         filename.write(str(dataFrame))
-            #         filename.close()
+        self.frameObjects(raw)
+        
+
+    def frameObjects(self, obj):
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            dataFrame = pd.DataFrame(obj, index=None)
+            transposedDataFrame = dataFrame.T
+            transposedDataFrame.columns = headers
+            print(transposedDataFrame)
 
 
+ 
 
 
+        
+        
+            
+        # g = [data.append(t) for t in raw]
+        
+
+            
+
+
+    
 

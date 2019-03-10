@@ -28,11 +28,15 @@ def Company():
     else:
         os.system("clear")
         print('files exist')
-        start.getNames()
+        x = start.getNames()
         thickerList = CompanyList.createURL()
+        t = 0
         for i in thickerList:
+            print(x[t])
             scrape = Scrape(i)
             scrape.getURL()
+            t += 1
+    
 
 
 def main():
@@ -44,4 +48,5 @@ if __name__=='__main__':
 
 
 #%%
+
 
