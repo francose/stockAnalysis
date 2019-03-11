@@ -10,15 +10,17 @@ except:
 '''
 author : Sadik Erisen
 '''
-from companyNames import CompanyNames
+
+from companyNames import CompanyDirectories
 from scrapeContent import Scrape
+
 
 ENDPOINTS = ["https://finance.yahoo.com/quote/",
              "https://www.investopedia.com/articles/investing/053116/10-largest-holdings-sp-500-aaplamznfb.asp"]
 
 
-start = CompanyNames(ENDPOINTS[1])
-CompanyList = CompanyNames(ENDPOINTS[0])
+start = CompanyDirectories(ENDPOINTS[1])
+CompanyList = CompanyDirectories(ENDPOINTS[0])
 
 def Company():
     if not (os.path.exists("Companies/")):
@@ -28,16 +30,13 @@ def Company():
     else:
         os.system("clear")
         print('files exist')
-        x = start.getNames()
-        thickerList = CompanyList.createURL()
-        t = 0
-        for i in thickerList:
-            print(x[t])
-            scrape = Scrape(i)
-            scrape.getURL()
-            t += 1
-    
+        names = start.getNames()
+        scrape = Scrape()
+        scrape.getURL()
+        for i in names:
+            scrape.getName(i)
 
+        
 
 def main():
     Company()
