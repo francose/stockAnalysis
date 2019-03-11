@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 
 path = "Companies/"
-class CompanyNames(object):
+class CompanyDirectories(object):
     def __init__(self, url, thickers=[], urlList=[]):
         self.url = url
         self.thickers = thickers
@@ -45,10 +45,11 @@ class CompanyNames(object):
                 time.sleep(.8)
                 self.createDirectory()    
 
-    def createURL(self):
-        for i in self.thickers:
-            self.urlList.append(self.url + i + "/history?p=" + i)
-        return(self.urlList)
+    # def createURL(self):
+    #     f = open("Companies/URL.txt", 'w+')
+    #     for i in self.thickers:
+    #         f.write('"' + self.url + i + "/history?p=" + i + '",\n')
+    
 
 
 
