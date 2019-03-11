@@ -6,6 +6,8 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 headers = ['Date', 'Open', 'High','Low','Close','Adj Close', 'Vol']
 
+
+
 urls = [    "https://finance.yahoo.com/quote/MSFT/history?p=MSFT",
             "https://finance.yahoo.com/quote/XOM/history?p=XOM",
             "https://finance.yahoo.com/quote/JNJ/history?p=JNJ",
@@ -17,10 +19,16 @@ urls = [    "https://finance.yahoo.com/quote/MSFT/history?p=MSFT",
             "https://finance.yahoo.com/quote/WFC/history?p=WFC"
             ]
 
-
-
 class Scrape:
+    def __init__(self, thickers={}):
+        self.thickers = thickers
+
+    def getName(self, name=[]):
+        self.thickers = name
+        
+
     def getURL(self, x=0, pool=ThreadPool(32)):
+        print(self.thickers)
         try:
             res = pool.map(urllib.request.urlopen, urls)
         except urllib.error.HTTPError as e:
@@ -30,11 +38,12 @@ class Scrape:
         else:
             while x < len(urls):
                 print('Status code : ' , res[x].getcode(), "\t", urls[x]) 
-                self.getContent(res[x])
-                res[x].close()               
+                self.getContent(res[x])              
                 pool.close()
                 pool.join()   
+                res[x].close()
                 x += 1
+
             
     data = []
     def getContent(self, res):
