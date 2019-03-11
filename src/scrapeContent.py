@@ -1,60 +1,61 @@
-import requests, time
+import urllib.request, time
 from bs4 import BeautifulSoup
 import pandas as pd
+from multiprocessing.dummy import Pool as ThreadPool
 
-headers = ['Date',
-           'Open',
-           'High',
-           'Low',
-           'Close',
-           'Adj Close',
-           'Vol']
 
-class Scrape(object):
-    def __init__(self, url):
-        self.url = url
+headers = ['Date', 'Open', 'High','Low','Close','Adj Close', 'Vol']
 
-    def getURL(self):
-        res = requests.get(self.url)
-        if not (res.status_code == 200):
-            print(" %s is failed proceed to next one..." % self.url)
-            time.sleep(.5)
-            next(self.getContent(res))
+urls = [    "https://finance.yahoo.com/quote/MSFT/history?p=MSFT",
+            "https://finance.yahoo.com/quote/XOM/history?p=XOM",
+            "https://finance.yahoo.com/quote/JNJ/history?p=JNJ",
+            "https://finance.yahoo.com/quote/GE/history?p=GE",
+            "https://finance.yahoo.com/quote/FB/history?p=FB",
+            "https://finance.yahoo.com/quote/AMZN/history?p=AMZN",
+            "https://finance.yahoo.com/quote/BRK-B/history?p=BRK-B",
+            "https://finance.yahoo.com/quote/T/history?p=T",
+            "https://finance.yahoo.com/quote/WFC/history?p=WFC"
+            ]
+
+
+
+class Scrape:
+    def getURL(self, x=0, pool=ThreadPool(32)):
+        try:
+            res = pool.map(urllib.request.urlopen, urls)
+        except urllib.error.HTTPError as e:
+            print('HTTP ERR: {}'.format(e.code)) 
+        except urllib.error.URLError as e:
+            print('URLError: {}'.format(e.reason))
         else:
-            self.getContent(res)
-
+            while x < len(urls):
+                print('Status code : ' , res[x].getcode(), "\t", urls[x]) 
+                self.getContent(res[x])
+                res[x].close()               
+                pool.close()
+                pool.join()   
+                x += 1
+            
+    data = []
     def getContent(self, res):
-        data = res.content
-        raw = BeautifulSoup(data, 'html.parser')
-        tableBody = raw.find_all(
-            'table', attrs={'class': 'W(100%) M(0)'})
+        bytesStrdata = res.read()
+        strNew = bytesStrdata.decode('utf-8')
+        raw = BeautifulSoup(strNew, 'html.parser')
+        tableBody = raw.find_all('table', attrs={'class': 'W(100%) M(0)'})
         table_body = tableBody[0].find('tbody')
         rows = table_body.find_all('tr')
-        for row in rows:
-            cols = row.find_all('td')
-            cols = [ele.text.strip() for ele in cols]
-            raw=([ele for ele in cols if ele])
-        self.frameObjects(raw)
-        
-
+        for i in range(0,len(rows)):
+            cols = [ele.text.strip() for ele in rows[i].find_all('td')]
+            self.data.append(cols)
+        self.frameObjects(self.data)    
+            
     def frameObjects(self, obj):
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            dataFrame = pd.DataFrame(obj, index=None)
-            transposedDataFrame = dataFrame.T
-            transposedDataFrame.columns = headers
-            print(transposedDataFrame)
-
-
- 
-
-
-        
-        
+            dataFrame = pd.DataFrame(obj, columns=headers)
+            return (dataFrame)
             
-        # g = [data.append(t) for t in raw]
-        
-
             
+
 
 
     
