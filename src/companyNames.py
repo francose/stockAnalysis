@@ -1,8 +1,8 @@
 import os, requests, time
 from bs4 import BeautifulSoup
+from globals import ENDPOINTS, URLS, HEADERS, PATH
 
 
-path = "Companies/"
 class CompanyDirectories(object):
     def __init__(self, url, thickers=[], urlList=[]):
         self.url = url
@@ -20,28 +20,28 @@ class CompanyDirectories(object):
         return(self.thickers)
 
     def createDirectory(self):
-        if (os.path.exists(path)):
-             print("The directory %s checked ...  " % path)
+        if (os.path.exists(PATH)):
+             print("The directory %s checked ...  " % PATH)
              time.sleep(.8)
              for dr in self.thickers:
                 try:
-                    abspath = path + dr
-                    os.mkdir(abspath)
-                    open(abspath + "/" + dr + ".csv", "w+")
+                    absPATH = PATH + dr
+                    os.mkdir(absPATH)
+                    open(absPATH + "/" + dr + ".csv", "w+")
                 except OSError:
                     print("Creation of the directory %s failed" % dr)
                 else:
                     print("Successfully created the directory %s " % dr)
                     time.sleep(.8)
         else:      
-            print("The directory of %s does not exist ... now creating the directory" % path)
+            print("The directory of %s does not exist ... now creating the directory" % PATH)
             time.sleep(.8)
             try:
-                os.makedirs(path)
+                os.makedirs(PATH)
             except OSError:
                 print('failed to create the directory ... please re-run the routine again ...')
             else:
-                print("Successfully created the directory of %s" % path)
+                print("Successfully created the directory of %s" % PATH)
                 time.sleep(.8)
                 self.createDirectory()    
 

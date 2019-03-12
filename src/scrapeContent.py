@@ -2,42 +2,25 @@ import urllib.request, time
 from bs4 import BeautifulSoup
 import pandas as pd
 from multiprocessing.dummy import Pool as ThreadPool
+from globals import ENDPOINTS, URLS, HEADERS, PATH
+from companyNames import CompanyDirectories
 
+compDics = CompanyDirectories(ENDPOINTS[1])
+names = compDics.getNames()
 
-headers = ['Date', 'Open', 'High','Low','Close','Adj Close', 'Vol']
-
-
-
-urls = [    "https://finance.yahoo.com/quote/MSFT/history?p=MSFT",
-            "https://finance.yahoo.com/quote/XOM/history?p=XOM",
-            "https://finance.yahoo.com/quote/JNJ/history?p=JNJ",
-            "https://finance.yahoo.com/quote/GE/history?p=GE",
-            "https://finance.yahoo.com/quote/FB/history?p=FB",
-            "https://finance.yahoo.com/quote/AMZN/history?p=AMZN",
-            "https://finance.yahoo.com/quote/BRK-B/history?p=BRK-B",
-            "https://finance.yahoo.com/quote/T/history?p=T",
-            "https://finance.yahoo.com/quote/WFC/history?p=WFC"
-            ]
 
 class Scrape:
-    def __init__(self, thickers={}):
-        self.thickers = thickers
-
-    def getName(self, name=[]):
-        self.thickers = name
-        
 
     def getURL(self, x=0, pool=ThreadPool(32)):
-        print(self.thickers)
         try:
-            res = pool.map(urllib.request.urlopen, urls)
+            res = pool.map(urllib.request.urlopen, URLS)
         except urllib.error.HTTPError as e:
             print('HTTP ERR: {}'.format(e.code)) 
         except urllib.error.URLError as e:
             print('URLError: {}'.format(e.reason))
         else:
-            while x < len(urls):
-                print('Status code : ' , res[x].getcode(), "\t", urls[x]) 
+            while x < len(URLS):
+                print('Status code : ' , res[x].getcode(), "\t", names[x]) 
                 self.getContent(res[x])              
                 pool.close()
                 pool.join()   
@@ -60,8 +43,12 @@ class Scrape:
             
     def frameObjects(self, obj):
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-            dataFrame = pd.DataFrame(obj, columns=headers)
-            return (dataFrame)
+            dataFrame = pd.DataFrame(obj, columns=HEADERS)
+            for key in names:
+                filename = open(PATH + key + "/" + key + ".csv", "w")
+                filename.write(str(dataFrame))
+                filename.close()
+            
             
             
 
