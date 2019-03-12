@@ -27,7 +27,7 @@ def Company():
     else:
         os.system("clear")
         print('files exist')
-        names = start.getNames()
+        start.getNames()
         scrape.getURL()
        
     
