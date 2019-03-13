@@ -1,14 +1,22 @@
-import urllib.request, time
+import urllib.request, time, json
 from bs4 import BeautifulSoup
 import pandas as pd
 from multiprocessing.dummy import Pool as ThreadPool
 from globals import ENDPOINTS, URLS, HEADERS, PATH
 from companyNames import CompanyDirectories
 
-compDics = CompanyDirectories(ENDPOINTS[1])
-names = compDics.getNames()
+# NAMES = []
+# compDics = CompanyDirectories(ENDPOINTS[1])
+# names = compDics.getNames()
+# def appendd():
+#     x = 0
+#     while x < len(names):
+#         NAMES.insert(0,names[x])
+#         x+=1
+# appendd()
 
-company = {}
+
+status = []
 class Scrape:
 
     def getURL(self, x=0, pool=ThreadPool(32)):
@@ -20,11 +28,8 @@ class Scrape:
             print('URLError: {}'.format(e.reason))
         else:
             while x < len(URLS):
-                company['Status_code'] = res[x].getcode()
-                company["NAME"] = names[x] 
+                status.insert(0,res[x].getcode())
                 self.getContent(res[x])
-                print(company)
-                self.appendTo(company)
                 pool.close()
                 pool.join()   
                 res[x].close()
@@ -49,24 +54,26 @@ class Scrape:
         with pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
             dataFrame = pd.DataFrame(obj, columns=HEADERS) 
             dataFrame.dropna(inplace=True)
-            dataFrame.to_string(index=False, inplace=True)
-            print(dataFrame.head(2))
-            # company["DATA"]= {
-            #     "Date":dataFrame.Date,
-            #     "Open":dataFrame.Open,
-            #     "High":dataFrame.High,
-            #     "Low":dataFrame.Low,
-            #     "Close":dataFrame.Close,
-            #     "Adj_Close":dataFrame.Adj_Close,
-            #     "Vol":dataFrame.Vol
-            # }
+            
+            status_df = pd.DataFrame(status, columns=["Status_Code"])
+           
+            name_df = pd.DataFrame(status, columns=["NAME"])
+
+            result = pd.concat([status_df, name_df, dataFrame], axis=1)
+            
+            data = result.head(1).to_json(orient='records')
+            print(data )
+           
             
 
-    def appendTo(self, df):        
-            for key in names:
-                filename = open(PATH + key + "/" + key + ".json", "w")
-                filename.write(str(df))
-                filename.close()
+    # def appendTo(self, df): 
+    
+    #     for key in names:
+    #         newPath = PATH + key + "/" + key + ".json"
+    #         f = open(newPath, 'w')
+    #         json.dump(df, f, indent=4)
+            
+                
             
             
             
