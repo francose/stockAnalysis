@@ -1,5 +1,6 @@
-PATH = "Companies/"
 
+
+PATH = "Companies/"
 ENDPOINTS = ["https://finance.yahoo.com/quote/",
              "https://www.investopedia.com/articles/investing/053116/10-largest-holdings-sp-500-aaplamznfb.asp"]
 
@@ -18,3 +19,8 @@ HEADERS = ['Date', 'Open', 'High', 'Low', 'Close', 'Adj_Close', 'Vol']
 URLS = ["https://finance.yahoo.com/quote/MSFT/history?p=MSFT",
         "https://finance.yahoo.com/quote/XOM/history?p=XOM",
         ]
+
+
+
+
+NAMES=['MSFT', 'XOM', 'JNJ', 'GE', 'FB', 'AMZN', 'BRK-B', 'T', 'WFC']
