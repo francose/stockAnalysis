@@ -17,8 +17,15 @@ class CompanyDirectories(object):
         for i in range(0, len(rawThickers)):
             company = rawThickers[i].text
             self.thickers.append(company)
+            print(company)
+        self.aedit(self.thickers)
         return(self.thickers)
-
+    
+    def aedit(self, names):
+        f = open("globals.py", "a")  
+        f.write("NAMES="+str(names) )
+        f.close()
+   
     def createDirectory(self):
         if (os.path.exists(PATH)):
              print("The directory %s checked ...  " % PATH)
@@ -27,7 +34,7 @@ class CompanyDirectories(object):
                 try:
                     absPATH = PATH + dr
                     os.mkdir(absPATH)
-                    open(absPATH + "/" + dr + ".csv", "w+")
+                    open(absPATH + "/" + dr + ".json", "w+")
                 except OSError:
                     print("Creation of the directory %s failed" % dr)
                 else:
@@ -44,7 +51,7 @@ class CompanyDirectories(object):
                 print("Successfully created the directory of %s" % PATH)
                 time.sleep(.8)
                 self.createDirectory()    
-
+       
     # def createURL(self):
     #     f = open("Companies/URL.txt", 'w+')
     #     for i in self.thickers:
