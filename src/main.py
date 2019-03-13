@@ -26,13 +26,15 @@ def Company():
         Company()
     else:
         os.system("clear")
-        print('files exist')
-        start.getNames()
-        scrape.getURL()
-       
-    
+        print('files exist...')
+        try:
+            print('globals exist...')
+            scrape.getURL()
+        except ImportError:
+            start.getNames()
+            Company()
 
-        
+              
 
 def main():
     Company()
