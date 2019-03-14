@@ -1,6 +1,6 @@
 import os, requests, time
 from bs4 import BeautifulSoup
-from globals import ENDPOINTS, URLS, HEADERS, PATH
+from globals import *
 
 
 class CompanyDirectories(object):
@@ -17,15 +17,23 @@ class CompanyDirectories(object):
         for i in range(0, len(rawThickers)):
             company = rawThickers[i].text
             self.thickers.append(company)
-            print(company)
-        self.aedit(self.thickers)
         return(self.thickers)
-    
-    def aedit(self, names):
-        f = open("globals.py", "a")  
-        f.write("NAMES="+str(names) )
+
+    def createNAMES(self, name="NAMES="):
+         f = open("globals.py", "a+")
+         f.write(name+str(self.thickers)+'\n')
+         f.close()
+         time.sleep(1)
+
+    def createURLS(self, url="URLS="):
+        urls = [ENDPOINTS[0]+tag+"/history?p=" + tag for tag in self.thickers]
+        f = open("globals.py", "a+")
+        f.write(url+str(urls))
         f.close()
-   
+        time.sleep(1)
+
+        
+       
     def createDirectory(self):
         if (os.path.exists(PATH)):
              print("The directory %s checked ...  " % PATH)
@@ -50,12 +58,11 @@ class CompanyDirectories(object):
             else:
                 print("Successfully created the directory of %s" % PATH)
                 time.sleep(.8)
-                self.createDirectory()    
+                self.createDirectory()
+             
+                
        
-    # def createURL(self):
-    #     f = open("Companies/URL.txt", 'w+')
-    #     for i in self.thickers:
-    #         f.write('"' + self.url + i + "/history?p=" + i + '",\n')
+   
     
 
 

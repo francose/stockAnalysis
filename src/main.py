@@ -23,21 +23,24 @@ def scrp():
         scrape = Scrape(URLS[i], NAMES[i])
         scrape.createConnection()
 
-def Company():
+        
+def Company(name=getattr(globals, 'NAMES', None),
+            url=getattr(globals, 'URLS', None)):
+
     if not (os.path.exists("Companies/")):
         start.getNames()
         start.createDirectory()
-        Company()
+        if( name is None and url is None):
+            start.createNAMES()
+            start.createURLS()
+            Company()
+        else:
+            Company()
     else:
         os.system("clear")
         print('files exist...')
-        try:
-            print('globals exist...')
-            scrp()
-            time.sleep(1)
-        except ImportError:
-            start.getNames()
-            Company()              
+        scrp() 
+      
 
 def main():
     Company()
