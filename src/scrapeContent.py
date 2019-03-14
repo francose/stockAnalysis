@@ -34,8 +34,8 @@ class Scrape(object):
         with pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
             dataFrame = pd.DataFrame(obj, columns=HEADERS, )
             dataFrame.dropna(inplace=True)
-            dataFrame.rename(index={i : self.tag for i in range(0,len(NAMES))}, inplace=True)
-            data = dataFrame.head(1).to_json(orient='index')
+            dataFrame.rename(index={ i :  self.tag + ':%i'% i for i in range(0, len(NAMES))}, inplace=True)
+            data = dataFrame.to_json(orient='index')
             self.appendTo(data)
             return data
            
