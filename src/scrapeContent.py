@@ -2,38 +2,20 @@ import urllib.request, time, json
 from bs4 import BeautifulSoup
 import pandas as pd
 from multiprocessing.dummy import Pool as ThreadPool
-from globals import ENDPOINTS, URLS, HEADERS, PATH
-from companyNames import CompanyDirectories
-
-# NAMES = []
-# compDics = CompanyDirectories(ENDPOINTS[1])
-# names = compDics.getNames()
-# def appendd():
-#     x = 0
-#     while x < len(names):
-#         NAMES.insert(0,names[x])
-#         x+=1
-# appendd()
+from globals import *
 
 
-status = []
-class Scrape:
 
-    def getURL(self, x=0, pool=ThreadPool(32)):
-        try:
-            res = pool.map(urllib.request.urlopen, URLS)
-        except urllib.error.HTTPError as e:
-            print('HTTP ERR: {}'.format(e.code)) 
-        except urllib.error.URLError as e:
-            print('URLError: {}'.format(e.reason))
-        else:
-            while x < len(URLS):
-                status.insert(0,res[x].getcode())
-                self.getContent(res[x])
-                pool.close()
-                pool.join()   
-                res[x].close()
-                x += 1
+class Scrape(object):
+    def __init__(self, url, tag):
+        self.url = url
+        self.tag = tag   
+
+    def createConnection(self):
+        raw = urllib.request.urlopen(self.url)
+        con = raw.getcode()
+        print("Start : ",con ,self.tag,'\n', self.url)
+        self.getContent(raw)
 
     data = []
     def getContent(self, res):
@@ -45,34 +27,26 @@ class Scrape:
         rows = table_body.find_all('tr')
         for i in range(0, len(rows)):
             cols = [ele.text.strip() for ele in rows[i].find_all('td')]
-            self.data.insert(0,cols)
-        self.frameObjects(self.data)
-
-        
+            self.data.insert(0, cols)
+        return self.frameObjects(self.data)
         
     def frameObjects(self, obj):
         with pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
-            dataFrame = pd.DataFrame(obj, columns=HEADERS) 
+            dataFrame = pd.DataFrame(obj, columns=HEADERS, )
             dataFrame.dropna(inplace=True)
-            
-            status_df = pd.DataFrame(status, columns=["Status_Code"])
+            dataFrame.rename(index={i : self.tag for i in range(0,len(NAMES))}, inplace=True)
+            data = dataFrame.head(1).to_json(orient='index')
+            self.appendTo(data)
+            return data
            
-            name_df = pd.DataFrame(status, columns=["NAME"])
-
-            result = pd.concat([status_df, name_df, dataFrame], axis=1)
-            
-            data = result.head(1).to_json(orient='records')
-            print(data )
-           
-            
-
-    # def appendTo(self, df): 
+    def appendTo(self, df): 
+        newPath = PATH + self.tag + "/" + self.tag + ".json"
+        f = open(newPath, 'w')
+        f.write(df)
+        print('done...')
+        f.close()
+        
     
-    #     for key in names:
-    #         newPath = PATH + key + "/" + key + ".json"
-    #         f = open(newPath, 'w')
-    #         json.dump(df, f, indent=4)
-            
                 
             
             
@@ -81,4 +55,5 @@ class Scrape:
 
 
     
+
 
