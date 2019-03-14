@@ -37,9 +37,7 @@ def Company():
             time.sleep(1)
         except ImportError:
             start.getNames()
-            Company()
-
-              
+            Company()              
 
 def main():
     Company()
@@ -52,18 +50,3 @@ if __name__=='__main__':
 
 #%%
 
-    # def getURL(self, x=0, pool=ThreadPool(32)):
-    #     try:
-    #         res = pool.map(urllib.request.urlopen, URLS)
-    #     except urllib.error.HTTPError as e:
-    #         print('HTTP ERR: {}'.format(e.code))
-    #     except urllib.error.URLError as e:
-    #         print('URLError: {}'.format(e.reason))
-    #     else:
-    #         while x < len(URLS):
-    #             status.insert(0, res[x].getcode())
-    #             self.getContent(res[x])
-    #             pool.close()
-    #             pool.join()
-    #             res[x].close()
-    #             x += 1
