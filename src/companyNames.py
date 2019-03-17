@@ -1,13 +1,11 @@
-import os, requests, time
-from bs4 import BeautifulSoup
 from globals import *
 
 
 class CompanyDirectories(object):
-    def __init__(self, url, thickers=[], urlList=[]):
+    def __init__(self, url, thickers=[]):
         self.url = url
         self.thickers = thickers
-        self.urlList = urlList
+        
 
 #gets the top 10 company thickers
     def getNames(self):
