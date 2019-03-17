@@ -1,9 +1,4 @@
-import urllib.request, time, json
-from bs4 import BeautifulSoup
-import pandas as pd
-from multiprocessing.dummy import Pool as ThreadPool
 from globals import *
-
 
 
 class Scrape(object):
@@ -17,8 +12,8 @@ class Scrape(object):
         print("Start : ",con ,self.tag,'\n', self.url)
         self.getContent(raw)
 
-    data = []
     def getContent(self, res):
+        data = []
         bytesStrdata = res.read()
         strNew = bytesStrdata.decode('utf-8')
         raw = BeautifulSoup(strNew, 'html.parser')
@@ -26,18 +21,18 @@ class Scrape(object):
         table_body = tableBody[0].find('tbody')
         rows = table_body.find_all('tr')
         for i in range(0, len(rows)):
-            cols = [ele.text.strip() for ele in rows[i].find_all('td')]
-            self.data.insert(0, cols)
-        return self.frameObjects(self.data)
+            cols = [ele.text.strip() 
+            for ele in rows[i].find_all('td')]
+            data.insert(i, cols)
+        return self.frameObjects(data)
         
     def frameObjects(self, obj):
+        print(len(obj))
         with pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
-            dataFrame = pd.DataFrame(obj, columns=HEADERS, )
-            dataFrame.dropna(inplace=True)
-            dataFrame.rename(index={ i :  self.tag + ':%i'% i for i in range(0, len(NAMES))}, inplace=True)
-            data = dataFrame.to_json(orient='index')
-            self.appendTo(data)
-            return data
+            dataFrame = pd.DataFrame(obj, columns=HEADERS).to_json(
+                orient='records', lines=True)
+            self.appendTo(dataFrame)
+        return dataFrame
            
     def appendTo(self, df): 
         newPath = PATH + self.tag + "/" + self.tag + ".json"
