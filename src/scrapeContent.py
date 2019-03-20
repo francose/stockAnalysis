@@ -29,8 +29,7 @@ class Scrape(object):
     def frameObjects(self, obj):
         print(len(obj))
         with pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
-            dataFrame = pd.DataFrame(obj, columns=HEADERS).to_json(
-                orient='records', lines=True)
+            dataFrame = pd.DataFrame(obj, columns=HEADERS).to_json()
             self.appendTo(dataFrame)
         return dataFrame
            
