@@ -26,6 +26,7 @@ def readData():
         # By replacing all the commas in number we can convert all the data point in to a float number type example: float(df['Close'][0].replace(",", ""))
         data = [float(df['Close'][i].replace(",", "")) for i in range(
             0, len(df['Close'].sort_values(ascending=True)))]
+        #for both functions we pass the data as an array and set the window (period of 10)
         sma(data, 10)
         ema(data, 10)
 
