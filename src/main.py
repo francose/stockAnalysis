@@ -15,6 +15,7 @@ from companyNames import CompanyDirectories
 from scrapeContent import Scrape
 from calculations import *
 import globalAttribute as gb
+import tickers, url
 
 
 start = CompanyDirectories(gb.ENDPOINTS[1])
@@ -23,40 +24,34 @@ CompanyList = CompanyDirectories(gb.ENDPOINTS[0])
 
 def validateVars():
     try:
-        names = gb.NAMES
-        urls = gb.URLS
+        names = tickers.NAMES
+        urls = url.URLS
         print('name list found %s' % names)
         print('url list found %s' % urls)
     except AttributeError:
         print ('var not found')
-        start.createNAMES()
-        start.createURLS()
-
-
+        
 
 def scrp():
-    for i in range(0, len(gb.NAMES)):
-        scrape = Scrape(gb.URLS[i], gb.NAMES[i])
+    for i in range(0, len(tickers.NAMES)):
+        scrape = Scrape(url.URLS[i], tickers.NAMES[i])
         scrape.createConnection()
-        print('process done..')
-        # await asyncio.time(0.01)
 
- 
-def Company():
+
+def main():
     if not (gb.os.path.exists("Companies/")):
         start.getNames()
         validateVars()
         start.createDirectory()
-        Company()
+        main()
     else:
         gb.os.system("clear")
         print('files exist...')
+        validateVars()
         scrp()
     
+    
 
-def main():
-    Company()
-    # readData()
    
 
     

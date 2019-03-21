@@ -18,14 +18,14 @@ class CompanyDirectories(object):
         return(self.thickers)
 
     def createNAMES(self, name="NAMES="):
-         f = open("globalAttribute.py", "a+")
+         f = open("tickers.py", "w+")
          f.write(name+str(self.thickers)+'\n')
          f.close()
 
 
     def createURLS(self, url="URLS="):
         urls = [gb.ENDPOINTS[0]+tag+"/history?p=" + tag for tag in self.thickers]
-        f = open("globalAttribute.py", "a+")
+        f = open("url.py", "w+")
         f.write(url+str(urls))
         f.close()
        
