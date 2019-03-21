@@ -18,20 +18,18 @@ class CompanyDirectories(object):
         return(self.thickers)
 
     def createNAMES(self, name="NAMES="):
-         f = open("globals.py", "a+")
+         f = open("globalAttribute.py", "a+")
          f.write(name+str(self.thickers)+'\n')
          f.close()
 
 
     def createURLS(self, url="URLS="):
         urls = [gb.ENDPOINTS[0]+tag+"/history?p=" + tag for tag in self.thickers]
-        f = open("globals.py", "a+")
+        f = open("globalAttribute.py", "a+")
         f.write(url+str(urls))
         f.close()
        
 
-        
-       
     def createDirectory(self):
         if (gb.os.path.exists(gb.PATH)):
              print("The directory %s checked ...  " % gb.PATH)
