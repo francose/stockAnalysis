@@ -1,5 +1,4 @@
-from globals import *
-
+import globalAttribute as gb
 
 class Scrape(object):
     def __init__(self, url, tag):
@@ -7,7 +6,7 @@ class Scrape(object):
         self.tag = tag   
 
     def createConnection(self):
-        raw = urllib.request.urlopen(self.url)
+        raw = gb.urllib.request.urlopen(self.url)
         con = raw.getcode()
         print("Start : ",con ,self.tag,'\n', self.url)
         self.getContent(raw)
@@ -16,7 +15,7 @@ class Scrape(object):
         data = []
         bytesStrdata = res.read()
         strNew = bytesStrdata.decode('utf-8')
-        raw = BeautifulSoup(strNew, 'html.parser')
+        raw = gb.BeautifulSoup(strNew, 'html.parser')
         tableBody = raw.find_all('table', attrs={'class': 'W(100%) M(0)'})
         table_body = tableBody[0].find('tbody')
         rows = table_body.find_all('tr')
@@ -28,13 +27,13 @@ class Scrape(object):
         
     def frameObjects(self, obj):
         print(len(obj))
-        with pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
-            dataFrame = pd.DataFrame(obj, columns=HEADERS).to_json()
+        with gb.pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
+            dataFrame = gb.pd.DataFrame(obj, columns=gb.HEADERS).to_json()
             self.appendTo(dataFrame)
         return dataFrame
            
     def appendTo(self, df): 
-        newPath = PATH + self.tag + "/" + self.tag + ".json"
+        newPath = gb.PATH + self.tag + "/" + self.tag + ".json"
         f = open(newPath, 'w')
         f.write(df)
         print('done...')

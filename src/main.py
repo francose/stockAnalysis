@@ -14,41 +14,50 @@ author : Sadik Erisen
 from companyNames import CompanyDirectories
 from scrapeContent import Scrape
 from calculations import *
-from globals import *
+import globalAttribute as gb
 
 
-from multiprocessing import Pool
+start = CompanyDirectories(gb.ENDPOINTS[1])
+CompanyList = CompanyDirectories(gb.ENDPOINTS[0])
 
-start = CompanyDirectories(ENDPOINTS[1])
-CompanyList = CompanyDirectories(ENDPOINTS[0])
-# graph = drawGraph()
+
+def validateVars():
+    try:
+        names = gb.NAMES
+        urls = gb.URLS
+        print('name list found %s' % names)
+        print('url list found %s' % urls)
+    except AttributeError:
+        print ('var not found')
+        start.createNAMES()
+        start.createURLS()
+
+
 
 def scrp():
-    for i in range(0, len(NAMES)):
-        scrape = Scrape(URLS[i], NAMES[i])
+    for i in range(0, len(gb.NAMES)):
+        scrape = Scrape(gb.URLS[i], gb.NAMES[i])
         scrape.createConnection()
- 
-def Company(name=getattr(globals, 'NAMES', None),
-            url=getattr(globals, 'URLS', None)):
+        print('process done..')
+        # await asyncio.time(0.01)
 
-    if not (os.path.exists("Companies/")):
+ 
+def Company():
+    if not (gb.os.path.exists("Companies/")):
         start.getNames()
+        validateVars()
         start.createDirectory()
         Company()
-        if( name is None and url is None):
-            start.createNAMES()
-            start.createURLS()
-        else:
-            Company()
     else:
-        os.system("clear")
+        gb.os.system("clear")
         print('files exist...')
         scrp()
     
 
 def main():
-    # Company()
-    readData()
+    Company()
+    # readData()
+   
 
     
     
