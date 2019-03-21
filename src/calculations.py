@@ -4,7 +4,7 @@ from globals import *
 def sma(data, window):
     weight = np.repeat(1.0, window)/ window
     avg = np.convolve(data, weight, mode='valid')
-    print(avg)
+    print("SMA:", avg)
     return avg
 
 
@@ -13,9 +13,9 @@ def ema(data, window):
     weight /=  weight.sum()
     avg = avg = np.convolve(data, weight, mode='full')[:len(data)]
     avg[:window] = avg[window]
-    print(avg)
+    print("EMA:",avg)
     return avg
-    
+
 
 
 #reading data function, is just method that calucates the mean of the data and returns the value. Thought we need to manually pass the datafile.
@@ -29,6 +29,3 @@ def readData():
         #for both functions we pass the data as an array and set the window (period of 10)
         sma(data, 10)
         ema(data, 10)
-
-
-
