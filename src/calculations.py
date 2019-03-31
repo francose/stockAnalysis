@@ -3,7 +3,7 @@ import globalAttribute as gb
 def sma(data, window):
     weight = gb.np.repeat(1.0, window)/ window
     avg = gb.np.convolve(data, weight, mode='valid')
-    print("SMA:", avg)
+    # print("SMA:", avg)
     return avg
 
 
@@ -12,10 +12,14 @@ def ema(data, window):
     weight /=  weight.sum()
     avg = avg = gb.np.convolve(data, weight, mode='full')[:len(data)]
     avg[:window] = avg[window]
-    print("EMA:",avg)
+    # print("EMA:",avg)
     return avg
 
+#check series
 
+
+def map_fl_list(fnc: gb.Callable, l: gb.List[float]) -> gb.List[float]:
+    return [fnc(i) for i in l]
 
 #reading data function, is just method that calucates the mean of the data and returns the value. Thought we need to manually pass the datafile.
 def readData():
@@ -28,3 +32,7 @@ def readData():
         #for both functions we pass the data as an array and set the window (period of 10)
         sma(data, 10)
         ema(data, 10)
+        
+
+
+

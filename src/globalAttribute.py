@@ -7,9 +7,10 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import asyncio
+from typing import Callable, List, Any
 
-# tickers = open('tickers.py', 'w')
-# url = open('url.py', 'w')
+tickers = open('tickers.py', 'w')
+url = open('url.py', 'w')
 
 
 
