@@ -15,7 +15,6 @@ from companyNames import CompanyDirectories
 from scrapeContent import Scrape
 from calculations import *
 import globalAttribute as gb
-import tickers, url
 
 
 start = CompanyDirectories(gb.ENDPOINTS[1])
@@ -24,18 +23,21 @@ CompanyList = CompanyDirectories(gb.ENDPOINTS[0])
 
 def validateVars():
     try:
-        names = tickers.NAMES
-        urls = url.URLS
+        names = gb.NAMES
+        urls = gb.URLS
         print('name list found %s' % names)
         print('url list found %s' % urls)
+
     except AttributeError:
         print ('var not found')
+      
         
 
 def scrp():
-    for i in range(0, len(tickers.NAMES)):
-        scrape = Scrape(url.URLS[i], tickers.NAMES[i])
+    for i in range(0, len(gb.NAMES)):
+        scrape =  Scrape(gb.URLS[i], gb.NAMES[i])
         scrape.createConnection()
+    
 
 
 def main():

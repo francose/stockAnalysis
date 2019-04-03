@@ -21,6 +21,7 @@ class CompanyDirectories(object):
          f = open("tickers.py", "w+")
          f.write(name+str(self.thickers)+'\n')
          f.close()
+        #  asyncio.time(0.01)
 
 
     def createURLS(self, url="URLS="):
@@ -28,6 +29,7 @@ class CompanyDirectories(object):
         f = open("url.py", "w+")
         f.write(url+str(urls))
         f.close()
+        # asyncio.time(0.01)
        
 
     def createDirectory(self):
