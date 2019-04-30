@@ -53,10 +53,16 @@ def RSI(period=4):
         down = (down*(period-1) + downval)/period
         rs = up//down
         rsi[i] = 100. - 100./(1.+rs)
-    print(rsi)
+    return rsi
 
-RSI()
-# readData()
+def macd(x=readData(), slow=25, fast=12):
+    emaFast = ema(x, fast) 
+    emaSlow = ema(x, slow)
+    print(emaFast, emaSlow, emaFast - emaSlow)
+    return emaFast, emaSlow, emaFast - emaSlow
+
    
+macd()
+
 
 
