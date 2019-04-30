@@ -3,16 +3,15 @@ import globalAttribute as gb
 def sma(data, window):
     weight = gb.np.repeat(1.0, window)/ window
     avg = gb.np.convolve(data, weight, mode='valid')
-    print("SMA:", avg)
+    # print("SMA:", avg)
     return avg
 
 
 def ema(data, window):
     weight = gb.np.exp(gb.np.linspace(-1. , 0. ,window ))
     weight /=  weight.sum()
-    avg = avg = gb.np.convolve(data, weight, mode='full')[:len(data)]
+    avg = gb.np.convolve(data, weight, mode='full')[:len(data)]
     avg[:window] = avg[window]
-    print("EMA:",avg)
     return avg
 
 
@@ -32,25 +31,32 @@ def readData():
         return data
         
         
-def RSI(period):
+def RSI(period=4):
     data = readData()
-    fncArry = [sma(data, 30), ema(data, 30)]
-    for delta in fncArry:
-            discreteDiff(delta)
-            u = delta * 0
-            d = u.copy()
-            u[delta > 0] = delta[delta > 0]
-            d[delta < 0] = -delta[delta < 0]
-            u[u.index[period-1]] = gb.np.mean(u[:period])
-            u = u.drop(u.index[:(period-1)])
-            # first value is sum of avg losses
-            d[d.index[period-1]] = gb.np.mean(d[:period])
-            d = d.drop(d.index[:(period-1)])
-            rs = gb.pd.stats.moments.ewma(u, com=period-1, adjust=False) / \
-                gb.pd.stats.moments.ewma(d, com=period-1, adjust=False)
-            return 100 - 100 / (1 + rs)
+    e = ema(data, period)
+    deltas = gb.np.diff(e)
+    newArry = deltas[:period + 1]
+    up = newArry[newArry >= 0].sum()/period
+    down = -newArry[newArry < 0].sum() / period
+    relativeStrenght = up/down
+    rsi = gb.np.zeros_like(e)
+    rsi[:period] = 100. - 100. / (1.+ relativeStrenght)
+    for i in range(period, len(e)):
+        delta = deltas[i-1] 
+        if delta > 0:
+            upval = delta
+            downval = 0.
+        else:
+            upval = 0.
+            downval = -delta
+        up = (up*(period-1) + upval)/period
+        down = (down*(period-1) + downval)/period
+        rs = up//down
+        rsi[i] = 100. - 100./(1.+rs)
+    print(rsi)
 
-RSI(14)
+RSI()
+# readData()
    
 
 
