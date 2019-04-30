@@ -141,4 +141,4 @@ points are plotted on top of MACD line
 we interpret the crossing of the MACD line and the signal line as validations of whether or buy or sell. look at photos attached for more detail
 look at the photos attached in the EMA board for more verification photos with he MACD line.
 
-![MACD](https://github.com/francose/stockAnalysis/blob/master/src/public/MACD.png)
+![MACD](https://github.com/francose/stockAnalysis/blob/master/src/public/MACD.jpg)
