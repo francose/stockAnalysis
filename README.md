@@ -28,6 +28,24 @@ for example: the photo attached shows examples of when to buy and sell based on 
 in mathematical terms, we are looking for the moment where stock value is less than, equal to, then greater than the EMA value. those three steps serve as an indication to look at the verification. look at next board for verification.
 
 the moment where the stock price then dips below the ema line, thats an indication to sell/ stop losses.
+
+The EMA (exponential moving average) is a type of moving average that puts more weight on more recent stock prices. which is unlike the simple moving average which views all the data equally. 
+
+for example, we want to plot a 10 day EMA. The first data point of the EMA line is just the average of the past 10 days. (we have to start somewhere) so add the past 10 closing prices and divide by 10.  
+
+(note: the unit for EMA is a candlestick. the closing price of the candlestick specifically. 1 candlestick is 1 period)
+
+the next data point is where we calculate the EMA.
+
+General Formula: 
+[Closing price - EMA (previous day)] x constant  + EMA (previous day)
+
+the constant =  [ 2 ÷ ( period + 1 ) ] = [2 ÷ (10 + 1)]= 2/11
+
+Note: the first data point is just an average. so when we calculate the second data point, we use the first data point(the avg) as the previous day's EMA in the calculation. 
+
+Refer to the google doc shared to see this calculation being used
+
 ![EMA](https://github.com/francose/stockAnalysis/blob/master/src/public/EMA.png)
 
 Once we see a cross over with the stock price and the EMA, it not a guarantee that the stock price will continue to go up. its a strong suggestion that there might be a rise/ decline in stock price, but we need to be safe that a strong trend is present.
@@ -99,3 +117,28 @@ NOTE: if this is getting confusing, refer to the google spread sheet and see the
 
 again, the RS is found by dividing the AVG Gain by the AVG Loss
 ![RSI](https://github.com/francose/stockAnalysis/blob/master/src/public/RSI.png)
+
+#MACD
+
+Moving average convergence divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages of prices.
+
+to calculate the MACD: 
+we calculate the 12 period EMA of the stock, minus the 26 period EMA. these values are plotted and is called the MACD line. these points are plotted on a separate graph from that of the stock price.
+
+after that, we calculate a 9 period EMA OF THE MACD LINE. this second line is called a "signal line" and is plotted on top of the MACD line.
+
+General Formula: 
+1) MACD
+same concept discussed in the previous EMA board. the first point plotted uses an average, as discussed previously. same mathematical formula for calculating the EMA:
+
+MACD = (12 period EMA - 26 peiod ema) =
+[(closing price of last candle - previous EMA)(2/(12+1))+previous EMA] - [(closing price of last candle - previous EMA)(2/(26+1))+previous EMA]
+
+2) signal line: 9 period ema of the MACD line.
+[(last MACD value - previous EMA)*(2/(9+1))+previous EMA]
+points are plotted on top of MACD line
+
+we interpret the crossing of the MACD line and the signal line as validations of whether or buy or sell. look at photos attached for more detail
+look at the photos attached in the EMA board for more verification photos with he MACD line.
+
+![MACD](https://github.com/francose/stockAnalysis/blob/master/src/public/MACD.png)
