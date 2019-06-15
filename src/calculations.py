@@ -55,6 +55,7 @@ def RSI(period=4):
         rsi[i] = 100. - 100./(1.+rs)
     return rsi
 
+
 def macd(x=readData(), slow=25, fast=12):
     emaFast = ema(x, fast) 
     emaSlow = ema(x, slow)
@@ -62,7 +63,7 @@ def macd(x=readData(), slow=25, fast=12):
     return emaFast, emaSlow, emaFast - emaSlow
 
    
-macd()
+
 
 
 
