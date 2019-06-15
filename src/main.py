@@ -118,26 +118,26 @@ class HistoricData:
         futures = [HistoricData.call_List(url) for url in urls]
         await gb.asyncio.wait(futures)
 
+#TODO In complete below: 
+# class DFrame(object):
 
-class DFrame(object):
-
-    def __init__(self, object):
-        self.object = []
+#     def __init__(self, object):
+#         self.object = []
 
 
-    def frameObjects(self, obj):
-        with gb.pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
-            dataFrame = gb.pd.DataFrame(obj, columns=gb.HEADERS).to_json()
-            self.object.append(dataFrame)
-        return dataFrame
+#     def frameObjects(self, obj):
+#         with gb.pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
+#             dataFrame = gb.pd.DataFrame(obj, columns=gb.HEADERS).to_json()
+#             self.object.append(dataFrame)
+#         return dataFrame
 
-    def appendTo(self, df):
-        for tag in tags:
-            newPath = gb.PATH + tag + "/" + tag + ".json"
-            f = open(newPath, 'w')
-            f.write(df)
-            print('done...')
-            f.close()
+#     def appendTo(self, df):
+#         for tag in tags:
+#             newPath = gb.PATH + tag + "/" + tag + ".json"
+#             f = open(newPath, 'w')
+#             f.write(df)
+#             print('done...')
+#             f.close()
 
 
 async def main():
