@@ -99,45 +99,38 @@ class HistoricData:
     async def call_List(cls, url):
         data = []
         response = await gb.aiohttp.ClientSession().get(url)
-        # data = await response.text()
         bytesStrdata = await response.read()
         strNew = bytesStrdata.decode('utf-8')
         raw = gb.BeautifulSoup(strNew, 'html.parser')
         tables = raw.find_all('table', attrs={'class': 'W(100%) M(0)'})
         table_body = tables[0].find('tbody')
         rows = table_body.find_all('tr')
+
         for i in range(0, len(rows)):
             cols = [ele.text.strip()
             for ele in rows[i].find_all('td')]
-            # data.insert(i, cols)
-            print(cols)
+            data.insert(i, cols)
+        
+        with gb.pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
+            dataFrame = gb.pd.DataFrame(data, columns=gb.HEADERS).to_json()
+            print(dataFrame)
+        
+        for tag in tags:
+            newPath = gb.PATH + tag + "/" + tag + ".json"
+            f = open(newPath, 'w')
+            f.write(dataFrame)
+            print('done...')
+            f.close()
+
         return data
 
-    async def execute():
+    
+
+    @classmethod
+    async def execute(cls):
         urls = await CreateURL()
         futures = [HistoricData.call_List(url) for url in urls]
         await gb.asyncio.wait(futures)
-
-#TODO In complete below: 
-# class DFrame(object):
-
-#     def __init__(self, object):
-#         self.object = []
-
-
-#     def frameObjects(self, obj):
-#         with gb.pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
-#             dataFrame = gb.pd.DataFrame(obj, columns=gb.HEADERS).to_json()
-#             self.object.append(dataFrame)
-#         return dataFrame
-
-#     def appendTo(self, df):
-#         for tag in tags:
-#             newPath = gb.PATH + tag + "/" + tag + ".json"
-#             f = open(newPath, 'w')
-#             f.write(df)
-#             print('done...')
-#             f.close()
 
 
 async def main():
@@ -146,7 +139,9 @@ async def main():
     else:
         gb.os.system("clear")
         print('files exist...')
+        # HistoricData.ddff("")
         await gb.asyncio.gather(HistoricData.execute(), CreateURL())
+        
 
 
 if __name__ == "__main__":
