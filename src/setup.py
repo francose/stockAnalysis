@@ -2,7 +2,6 @@ from setuptools import setup
 
 
 setup(
-    
     name='stockAnalysis',
     version='0.1',
     description='',
@@ -10,7 +9,7 @@ setup(
     author='Sadik Erisen',
     license='MIT',
     packages=['stockAnalysis'],
-    keywords='stock, finance, market',
+    keywords='stocks, finance, market, S&P500',
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
