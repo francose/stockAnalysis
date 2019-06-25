@@ -6,6 +6,7 @@ Auhtor : Sadik Erisen
 
 import os
 import requests
+from requests.exceptions import Timeout
 import time, datetime
 import json
 import aiohttp
@@ -21,12 +22,15 @@ import numpy as np
 
 
 ENDPOINTS = [
-    "https://finance.yahoo.com/quote/",
+    "https://query1.finance.yahoo.com/v8/finance/chart/",
     "http://www.barchart.com/stocks/sp500.php"
+
 ]
 
 
-class AbstractFoundation(object):
+
+
+class AbstractComsumer(object):
     class handleError(Exception):
         pass
     
@@ -54,36 +58,129 @@ class AbstractFoundation(object):
     def get_DATAFRAME(self):
         return self.dataframe
 
+    def HandleDate(self, date):
+        ConvertedDate = datetime.datetime.utcfromtimestamp(date)
+        date = ConvertedDate.date()
+        return date
+
+
+
+
     def write_ToCSV(self, path='output.csv'):
         if not path[-4:] == '.csv':
             path += '.csv'     
         self.dataframe.to_csv(path, index=True)
 
 
+class BarChart_SNP500(AbstractComsumer):
 
-class ConsumeData(AbstractFoundation):
-
-    def __init__(self, url, *args, **kwargs):
+    def __init__(self, url):
         super().__init__()
         self.url = url
 
     def reponseContent(self):
-        result = self.url_RESPONSE(self.url).text
+        result = self.url_RESPONSE(self.url)
         raw = BeautifulSoup(result, 'html.parser')
-        print(raw)
         return raw
 
+    def ExtractData(self, data=[]):
+        raw = self.reponseContent()
+        tables = raw.find_all('table', attrs={'class': 'W(100%) M(0)'})
+        table_body = tables[0].find('tbody')
+        rows = table_body.find_all('tr')
+
+        for i in range(0, len(rows)):
+            cols = [ele.text.strip() for ele in rows[i].find_all('td')]
+            data.insert(i, cols)
+        print(data[0])
 
 
-#Methods
-def Extractor(url):
-    '''Exctractor method below gets raw html with given endpoint '''
-    extract = ConsumeData(url)
-    return extract.reponseContent()
 
 
-if __name__ == "__main__":
-    Extractor(ENDPOINTS[0])
+
+class YahooFinance(AbstractComsumer):
+
+    def __init__(self, symbol, duration, interval):
+        super().__init__()
+        self.url = ENDPOINTS[0]
+        self.symbol = symbol
+        self.duration = duration
+        self.interval = interval
+
+    def create_URL(self):
+        ''' 
+        $symbol is the stock ticker symbol, e.g. AAPL for Apple
+        $range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
+        $interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m
+        '''
+        url = ('%s?range=%s&interval=%s' %
+               (self.symbol, self.duration, self.interval))
+        query = self.url + url
+        return query
+
+
+    def reponseContent(self):
+        result = self.url_RESPONSE(self.create_URL())
+        data = result.json()
+        return data
+
+    def CompanyMetaData(self):
+        raw =  self.reponseContent()
+        CompanyMetaData = raw['chart']['result'][0]['meta']
+        return CompanyMetaData
+
+
+    
+    def CompanyNameQuote(self):    
+        raw = self.reponseContent()
+        
+        CompanyQuotes=[]
+
+        CompnayTicker = raw['chart']['result'][0]['meta']['symbol']
+        Date = raw['chart']['result'][0]['timestamp'][0]
+        handleDates = self.HandleDate(Date)
+        High = raw['chart']['result'][0]['indicators']['quote'][0]['high'][0]
+        Low = raw['chart']['result'][0]['indicators']['quote'][0]['low'][0]
+        Open = raw['chart']['result'][0]['indicators']['quote'][0]['open'][0]
+        Close = raw['chart']['result'][0]['indicators']['quote'][0]['close'][0]
+        Adj_Close = raw['chart']['result'][0]['indicators']['adjclose'][0]['adjclose']
+        Volume = raw['chart']['result'][0]['indicators']['quote'][0]['volume'][0]
+        CompanyQuotes.append((
+            CompnayTicker, 
+            handleDates, 
+            High, Low,
+            Open, 
+            Close,
+            Adj_Close,
+            Volume))
+
+        return CompanyQuotes[0]
+        
+    
+        
+
+
+ytd = YahooFinance('AAPL', '1d', '1d')
+x = ytd.CompanyNameQuote()
+print(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
