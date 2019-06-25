@@ -60,9 +60,11 @@ class AbstractComsumer(object):
 
     def HandleDate(self, date):
         ConvertedDate = datetime.datetime.utcfromtimestamp(date)
-        constructDate = ConvertedDate.date()
-        date = constructDate.strftime("%Y-%m-%d")
-        return date
+        x = ConvertedDate[0]
+        print(x)
+        # constructDate = ConvertedDate.date()
+        # date = constructDate.strftime("%Y-%m-%d")
+        # return date
 
     def HandleTime(self, t):
         ConvertedTime = datetime.datetime.utcfromtimestamp(t)
