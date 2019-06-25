@@ -60,11 +60,15 @@ class AbstractComsumer(object):
 
     def HandleDate(self, date):
         ConvertedDate = datetime.datetime.utcfromtimestamp(date)
-        date = ConvertedDate.date()
+        constructDate = ConvertedDate.date()
+        date = constructDate.strftime("%Y-%m-%d")
         return date
 
-
-
+    def HandleTime(self, t):
+        ConvertedTime = datetime.datetime.utcfromtimestamp(t)
+        constructTime = ConvertedTime.time()
+        newTime = constructTime.strftime("%H:%M")
+        return newTime
 
     def write_ToCSV(self, path='output.csv'):
         if not path[-4:] == '.csv':
@@ -138,7 +142,8 @@ class YahooFinance(AbstractComsumer):
 
         CompnayTicker = raw['chart']['result'][0]['meta']['symbol']
         Date = raw['chart']['result'][0]['timestamp'][0]
-        handleDates = self.HandleDate(Date)
+        newDate = self.HandleDate(Date)
+        newTime = self.HandleTime(Date)
         High = raw['chart']['result'][0]['indicators']['quote'][0]['high'][0]
         Low = raw['chart']['result'][0]['indicators']['quote'][0]['low'][0]
         Open = raw['chart']['result'][0]['indicators']['quote'][0]['open'][0]
@@ -147,7 +152,8 @@ class YahooFinance(AbstractComsumer):
         Volume = raw['chart']['result'][0]['indicators']['quote'][0]['volume'][0]
         CompanyQuotes.append((
             CompnayTicker, 
-            handleDates, 
+            newDate,
+            newTime,
             High, Low,
             Open, 
             Close,
