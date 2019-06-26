@@ -16,28 +16,29 @@ setup(
         'Topic :: Office/Business :: Financial'
     ],
     install_requires=[
-        'aiohttp == 3.5.4',
-        'async-timeout == 3.0.1',
-        'attrs == 19.1.0',
-        'beautifulsoup4 == 4.7.1',
-        'certifi == 2018.11.29',
-        'chardet == 3.0.4',
-        'cycler == 0.10.0',
-        'idna == 2.8',
-        'idna-ssl == 1.1.0',
-        'kiwisolver == 1.0.1',
-        'multidict == 4.5.2',
-        'numpy == 1.16.1',
-        'pandas == 0.24.1',
-        'pyparsing == 2.3.1',
-        'python-dateutil == 2.8.0',
-       ' pytz == 2018.9',
-        'requests == 2.21.0',
-        'six == 1.12.0',
-        'soupsieve == 1.8',
-        'typing-extensions == 3.7.2',
-        'urllib3 == 1.24.1',
-        'yarl == 1.3.0',
+        'attrs == 19.1.0'
+        'beautifulsoup4 == 4.7.1'
+        'certifi == 2018.11.29'
+        'chardet == 3.0.4'
+        'colorama == 0.4.1'
+        'configparser == 3.7.4'
+        'crayons == 0.2.0'
+        'cycler == 0.10.0'
+        'idna == 2.8'
+        'idna-ssl == 1.1.0'
+        'kiwisolver == 1.0.1'
+        'multidict == 4.5.2'
+        'numpy == 1.16.1'
+        'pandas == 0.24.1'
+        'pyparsing == 2.3.1'
+        'python-dateutil == 2.8.0'
+        'pytz == 2018.9'
+        'requests == 2.21.0'
+        'six == 1.12.0'
+        'soupsieve == 1.8'
+        'typing-extensions == 3.7.2'
+        'yarl == 1.3.0'
+
     ],
     include_package_data=True,
     zip_safe=False
