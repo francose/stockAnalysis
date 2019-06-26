@@ -1,3 +1,20 @@
+# Yahoo Finance S&P500 Extrator 
+
+Method and Params: YahooFinance( Symbol , Range/Duration , interval )
+Symbol is the stock ticker symbol, e.g. AAPL for Apple
+range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
+interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m]
+
+
+# USAGE
+yf = YahooFinance('AAPL', '1d', '1d')
+quotes = yf.CompanyQuotes()
+print(quotes)
+
+
+
+
+
 # stockAnalysis
 Exponential Moving Average and Simple Moving Average.
 
