@@ -58,19 +58,8 @@ class AbstractComsumer(object):
     def get_DATAFRAME(self):
         return self.dataframe
 
-    def HandleDate(self, date):
-        ConvertedDate = datetime.datetime.utcfromtimestamp(date)
-        x = ConvertedDate[0]
-        print(x)
-        # constructDate = ConvertedDate.date()
-        # date = constructDate.strftime("%Y-%m-%d")
-        # return date
-
-    def HandleTime(self, t):
-        ConvertedTime = datetime.datetime.utcfromtimestamp(t)
-        constructTime = ConvertedTime.time()
-        newTime = constructTime.strftime("%H:%M")
-        return newTime
+    def HandleDate(self,  d: []) -> None:
+        return [str(datetime.datetime.fromtimestamp(t)) for t in d]
 
     def write_ToCSV(self, path='output.csv'):
         if not path[-4:] == '.csv':
@@ -136,40 +125,33 @@ class YahooFinance(AbstractComsumer):
         return CompanyMetaData
 
 
-    
-    def CompanyNameQuote(self):    
+    def CompanyDailyQuotes(self, CompanyQuotes=[]):
         raw = self.reponseContent()
-        
-        CompanyQuotes=[]
+        dataFrame = pd.DataFrame(raw)
+        data = dataFrame['chart']['result'][0]
+        newDate = self.HandleDate(data['timestamp'])
 
-        CompnayTicker = raw['chart']['result'][0]['meta']['symbol']
-        Date = raw['chart']['result'][0]['timestamp'][0]
-        newDate = self.HandleDate(Date)
-        newTime = self.HandleTime(Date)
-        High = raw['chart']['result'][0]['indicators']['quote'][0]['high'][0]
-        Low = raw['chart']['result'][0]['indicators']['quote'][0]['low'][0]
-        Open = raw['chart']['result'][0]['indicators']['quote'][0]['open'][0]
-        Close = raw['chart']['result'][0]['indicators']['quote'][0]['close'][0]
-        Adj_Close = raw['chart']['result'][0]['indicators']['adjclose'][0]['adjclose']
-        Volume = raw['chart']['result'][0]['indicators']['quote'][0]['volume'][0]
-        CompanyQuotes.append((
-            CompnayTicker, 
-            newDate,
-            newTime,
-            High, Low,
-            Open, 
-            Close,
-            Adj_Close,
-            Volume))
-
-        return CompanyQuotes[0]
+        for i in range(0, len(data['timestamp'])):
+            CompanyQuotes.append(
+            {
+                "date": newDate[i],
+                "high": data['indicators']['quote'][0]['high'][i],
+                "low": data['indicators']['quote'][0]['low'][i],
+                "open": data['indicators']['quote'][0]['open'][i],
+                "close": data['indicators']['quote'][0]['close'][i],
+                "volume": data['indicators']['quote'][0]['volume'][i],
+                "adjclose": data['indicators']['adjclose'][0]['adjclose'][i]
+            }
+        )
+        company = [data['meta']['symbol'],  CompanyQuotes ]
+        return company
         
     
         
 
 
 ytd = YahooFinance('AAPL', '1d', '1d')
-x = ytd.CompanyNameQuote()
+x = ytd.CompanyDailyQuotes()
 print(x)
 
 
