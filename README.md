@@ -7,10 +7,10 @@ This package includes Stock analysis tools and data extractor by using Yahoo Fin
 
 # Yahoo Finance S&P500 Extrator 
 
-Method and Params: YahooFinance( Symbol , Range/Duration , interval )
-Symbol is the stock ticker symbol, e.g. AAPL for Apple
-range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
-interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m]
+- Method and Params: YahooFinance( Symbol , Range/Duration , interval )
+- Symbol is the stock ticker symbol, e.g. 'AAPL' for Apple or 'GOOG' for Google.
+- range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max].
+- interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m].
 
 
 # USAGE
@@ -27,7 +27,7 @@ print(quotes)
 # stockAnalysis
 Exponential Moving Average and Simple Moving Average.
 
-#SMA
+### SMA
 A simple moving average (SMA) is simply the average of a set of data. nothing fancy. its just used to smooth out the data and reduce the overall noise and short term volatility of a stock.
 
 goal: filter out for stocks that are above the 100 period SMA
@@ -44,7 +44,7 @@ attached is a photo that shows example of different moving averages. as we can s
 
 
 
-#EMA
+### EMA
 We plot the EMA line on top of the stock price graph. The EMA acts as a signal of when to buy/sell.
 
 The EMA line usually acts as a line of support or resistance for a stock price. meaning that the EMA is usually either below or above a stock price. when we see a crossover between the stock price and the EMA, we interpret that as a signal of when to buy or sell.
@@ -90,7 +90,7 @@ another way to validate the strength of the EMA signal/trend is to look at the s
 ![EMA2](https://github.com/francose/stockAnalysis/blob/master/src/public/EMA2.png)
 
 
-#RSI
+### RSI
 The equation for the RSI (Relative Strength Index) has multiple parts. be sure to refer to the google doc shared with you all to see how these calculations are used.
 
 General Equation to calculate the RSI is:
@@ -144,7 +144,7 @@ NOTE: if this is getting confusing, refer to the google spread sheet and see the
 again, the RS is found by dividing the AVG Gain by the AVG Loss
 ![RSI](https://github.com/francose/stockAnalysis/blob/master/src/public/RSI.png)
 
-#MACD
+### MACD
 
 Moving average convergence divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages of prices.
 
