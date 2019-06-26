@@ -1,3 +1,10 @@
+This package includes Stock analysis tools and data extractor by using Yahoo Finance..
+
+#Installation
+
+- pip install -r requirements
+
+
 # Yahoo Finance S&P500 Extrator 
 
 Method and Params: YahooFinance( Symbol , Range/Duration , interval )
@@ -7,6 +14,7 @@ interval is the desired interval of the quote, e.g. every 5 minutes, allowed par
 
 
 # USAGE
+
 yf = YahooFinance('AAPL', '1d', '1d')
 quotes = yf.CompanyQuotes()
 print(quotes)
