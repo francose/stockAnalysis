@@ -1,8 +1,8 @@
 This package includes Stock analysis tools and data extractor by using Yahoo Finance..
 
-#Installation
+# Installation
 
-- pip install -r requirements
+- pip install -r requirements.txt
 
 
 # Yahoo Finance S&P500 Extrator 
