@@ -18,10 +18,7 @@ import numpy as np
 
 
 ENDPOINTS = [
-    "https://query1.finance.yahoo.com/v8/finance/chart/",
-    "http://www.barchart.com/stocks/indices/sp/sp500"
-
-]
+    "https://query1.finance.yahoo.com/v8/finance/chart/"]
 
 
 
@@ -131,22 +128,6 @@ class YahooFinance(AbstractComsumer):
 
 
 
-
-
-
-''' 
-
-Method and Params: YahooFinance( Symbol , Range/Duration , interval )
-$symbol is the stock ticker symbol, e.g. AAPL for Apple
-$range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
-$interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m
-
-Ex : 
-ytd = YahooFinance('AAPL', '1d', '1d')
-quotes = ytd.CompanyQuotes()
-print(quotes)
-
-'''
 
 
 
