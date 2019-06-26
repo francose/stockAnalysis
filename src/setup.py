@@ -36,7 +36,7 @@ setup(
         'six == 1.12.0',
         'soupsieve == 1.8',
         'typing-extensions == 3.7.2',
-        'urllib3 == 1.24.1',
+        'urllib3 == 1.24.2',
         'yarl == 1.3.0',
     ],
     include_package_data=True,
