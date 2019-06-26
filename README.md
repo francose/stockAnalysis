@@ -15,10 +15,11 @@ interval is the desired interval of the quote, e.g. every 5 minutes, allowed par
 
 # USAGE
 
+```python
 yf = YahooFinance('AAPL', '1d', '1d')
 quotes = yf.CompanyQuotes()
 print(quotes)
-
+```
 
 
 
