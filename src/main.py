@@ -19,7 +19,7 @@ import numpy as np
 
 ENDPOINTS = [
     "https://query1.finance.yahoo.com/v8/finance/chart/",
-    "http://www.barchart.com/stocks/sp500.php"
+    "http://www.barchart.com/stocks/indices/sp/sp500"
 
 ]
 
@@ -130,90 +130,9 @@ class YahooFinance(AbstractComsumer):
         return company
 
 
-class BarChart_SNP500(AbstractComsumer):
-
-    def __init__(self, url):
-        super().__init__()
-        self.url = url
-
-    def percentage_string_to_number(self, df, columns, type_='float'):
-        if not isinstance(columns, list):
-            columns = [columns]
-        for column in columns:
-            df[column].replace('\+|%', '', regex=True, inplace=True)
-            df[column].replace('unch', '0', inplace=True)
-            df[column] = df[column].astype(type_) / 100
-            return df[column]
-
-    def getContent(self, url):
-        html = self.fetch(url).content
-        raw = BeautifulSoup(html, 'html.parser')
-        return raw
-
-    def extract_data(self, raw, columns):
-        """extract table data from soup, returns dataframe"""
-        data = []
-        tbody = raw.find('table', attrs={'id': 'dt1'}).tbody
-        rows = tbody.findAll('tr')
-        for row in rows:
-            cells = row.findAll('td')
-            record = [cells[i].text.strip() for i in range(len(columns))]
-            data.append(record)
-
-        df = pd.DataFrame(data, columns=columns)
-        df.set_index('Symbol', inplace=True)
-        df.replace('N/A', 0)
-        return df
-
-    def collect_snp500_by_type(self, type_='main'):
-        """get snp500 data and store in dataframe.
-        There are three types of data:
-        main, technical, and performance
-        """
-        columns = ['Symbol', 'Name', 'Last']
-        qs = {'view': 'main', '_dtp1': 0}
-        pct_columns = []  # percentage string columns need to be cleaned up
-        if type_ == 'main':
-            columns += ['Change', 'Percent', 'High', 'Low', 'Volume', 'Time']
-            pct_columns = ['Percent']
-        elif type_ == 'technical':
-            columns += ['Opinion', '20D-Strength',
-                        '20D-Volty', '20D-AVol', '52W-Low', '52W-High']
-            qs.update({'view': 'technical'})
-            pct_columns = ['20D-Strength', '20D-Volty']
-        elif type_ == 'performance':
-            columns += ['W-Alpha', 'YTD-Pct', '1M-Pct', '3M-Pct', '1Y-Pct']
-            qs.update({'view': 'performance'})
-            pct_columns = ['YTD-Pct', '1M-Pct', '3M-Pct', '1Y-Pct']
-
-        content = self.getContent(ENDPOINTS[1])
-        dataFrame = self.extract_data(content, columns)
-        self.percentage_string_to_number(dataFrame, pct_columns)
-
-        # Add date to dataframe
-        dataFrame['Date'] = datetime.date.today()
-
-        if self.dataframe is None:
-            self.df = dataFrame
-        else:
-            columns_to_use = dataFrame.columns.difference(self.df.columns)
-            self.df = self.df.join(dataFrame[columns_to_use])
-        return dataFrame
-
-    def snp500_full_data(self):
-        """get combines three types of data into single dataframe"""
-        for view in ['main', 'technical', 'performance']:
-            self.collect_snp500_by_type(view)
-
-    def snp500_symbol_list(self):
-        """return the list S&P 500 company symbols"""
-        if self.df is None:
-            self.collect_snp500_by_type('main')
-        return self.df.index.values.tolist()
 
 
 
-        
 
 ''' 
 

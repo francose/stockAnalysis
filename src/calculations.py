@@ -1,5 +1,8 @@
 import globalAttribute as gb
 
+
+
+
 def sma(data, window):
     weight = gb.np.repeat(1.0, window)/ window
     avg = gb.np.convolve(data, weight, mode='valid')

@@ -26,7 +26,6 @@ setup(
         'idna == 2.8',
         'idna-ssl == 1.1.0',
         'kiwisolver == 1.0.1',
-        'matplotlib == 3.0.3',
         'multidict == 4.5.2',
         'numpy == 1.16.1',
         'pandas == 0.24.1',
