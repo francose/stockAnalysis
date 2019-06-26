@@ -4,18 +4,14 @@ Auhtor : Sadik Erisen
 Version : 0.1
 '''
 
-import os
-import requests
-from requests.exceptions import Timeout
-import time, datetime
-import json
-import aiohttp
-import asyncio
-import six
+import os, time, datetime, json ,six
 from typing import Callable, List, Any
 from abc import ABCMeta
 
-
+import asyncio
+import requests
+from requests.exceptions import Timeout
+import aiohttp
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
@@ -36,15 +32,15 @@ class AbstractComsumer(object):
     
     def __init__(self):
         self.dataframe = None
-
-    def url_RESPONSE(self, url): 
+ 
+    def fetch(self, url): 
         FLAG = False
         counter = 0
         raw = None
 
         while not FLAG:
             try:
-                raw = requests.get(url)
+                raw =  requests.get(url)
                 FLAG = True
             except (requests.HTTPError, requests.ConnectionError) as e:
                 if counter < 3:
@@ -68,46 +64,19 @@ class AbstractComsumer(object):
         self.dataframe.to_csv(path, index=True)
 
 
-class BarChart_SNP500(AbstractComsumer):
-
-    def __init__(self, url):
-        super().__init__()
-        self.url = url
-
-    def reponseContent(self):
-        result = self.url_RESPONSE(self.url)
-        raw = BeautifulSoup(result, 'html.parser')
-        return raw
-
-    def ExtractData(self, data=[]):
-        raw = self.reponseContent()
-        tables = raw.find_all('table', attrs={'class': 'W(100%) M(0)'})
-        table_body = tables[0].find('tbody')
-        rows = table_body.find_all('tr')
-
-        for i in range(0, len(rows)):
-            cols = [ele.text.strip() for ele in rows[i].find_all('td')]
-            data.insert(i, cols)
-        print(data[0])
-
-
-
-
 
 class YahooFinance(AbstractComsumer):
 
     def __init__(self, symbol:str, duration:str, interval:str)-> str:
         super().__init__()
         self.url = ENDPOINTS[0]
-        try:
-            self.symbol = symbol
-            self.duration = duration
-            self.interval = interval
-        except (RuntimeError, TypeError, NameError) as e:
-            print(e)    
-   
+        self.symbol = symbol
+        self.duration = duration
+        self.interval = interval
 
-    def create_URL(self):
+
+
+    def create_URL(self, query=[]):
         ''' 
         $symbol is the stock ticker symbol, e.g. AAPL for Apple
         $range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
@@ -115,12 +84,11 @@ class YahooFinance(AbstractComsumer):
         ''' 
         url = ('%s?range=%s&interval=%s' %
             (self.symbol, self.duration, self.interval))
-        query = self.url + url
-        return query
-       
+        query= self.url + url
+        return query    
 
     def reponseContent(self):
-        result = self.url_RESPONSE(self.create_URL())
+        result = self.fetch(self.create_URL())
         data = result.json()
         return data
 
@@ -158,20 +126,108 @@ class YahooFinance(AbstractComsumer):
                         "adjclose": data['indicators']['adjclose'][0]['adjclose'][i]
                     }
                 )
-        company = [data['meta']['symbol'],  CompanyQuotes ]
+        company = [data['meta']['symbol'] , CompanyQuotes ]
         return company
 
+
+class BarChart_SNP500(AbstractComsumer):
+
+    def __init__(self, url):
+        super().__init__()
+        self.url = url
+
+    def percentage_string_to_number(self, df, columns, type_='float'):
+        if not isinstance(columns, list):
+            columns = [columns]
+        for column in columns:
+            df[column].replace('\+|%', '', regex=True, inplace=True)
+            df[column].replace('unch', '0', inplace=True)
+            df[column] = df[column].astype(type_) / 100
+            return df[column]
+
+    def getContent(self, url):
+        html = self.fetch(url).content
+        raw = BeautifulSoup(html, 'html.parser')
+        return raw
+
+    def extract_data(self, raw, columns):
+        """extract table data from soup, returns dataframe"""
+        data = []
+        tbody = raw.find('table', attrs={'id': 'dt1'}).tbody
+        rows = tbody.findAll('tr')
+        for row in rows:
+            cells = row.findAll('td')
+            record = [cells[i].text.strip() for i in range(len(columns))]
+            data.append(record)
+
+        df = pd.DataFrame(data, columns=columns)
+        df.set_index('Symbol', inplace=True)
+        df.replace('N/A', 0)
+        return df
+
+    def collect_snp500_by_type(self, type_='main'):
+        """get snp500 data and store in dataframe.
+        There are three types of data:
+        main, technical, and performance
+        """
+        columns = ['Symbol', 'Name', 'Last']
+        qs = {'view': 'main', '_dtp1': 0}
+        pct_columns = []  # percentage string columns need to be cleaned up
+        if type_ == 'main':
+            columns += ['Change', 'Percent', 'High', 'Low', 'Volume', 'Time']
+            pct_columns = ['Percent']
+        elif type_ == 'technical':
+            columns += ['Opinion', '20D-Strength',
+                        '20D-Volty', '20D-AVol', '52W-Low', '52W-High']
+            qs.update({'view': 'technical'})
+            pct_columns = ['20D-Strength', '20D-Volty']
+        elif type_ == 'performance':
+            columns += ['W-Alpha', 'YTD-Pct', '1M-Pct', '3M-Pct', '1Y-Pct']
+            qs.update({'view': 'performance'})
+            pct_columns = ['YTD-Pct', '1M-Pct', '3M-Pct', '1Y-Pct']
+
+        content = self.getContent(ENDPOINTS[1])
+        dataFrame = self.extract_data(content, columns)
+        self.percentage_string_to_number(dataFrame, pct_columns)
+
+        # Add date to dataframe
+        dataFrame['Date'] = datetime.date.today()
+
+        if self.dataframe is None:
+            self.df = dataFrame
+        else:
+            columns_to_use = dataFrame.columns.difference(self.df.columns)
+            self.df = self.df.join(dataFrame[columns_to_use])
+        return dataFrame
+
+    def snp500_full_data(self):
+        """get combines three types of data into single dataframe"""
+        for view in ['main', 'technical', 'performance']:
+            self.collect_snp500_by_type(view)
+
+    def snp500_symbol_list(self):
+        """return the list S&P 500 company symbols"""
+        if self.df is None:
+            self.collect_snp500_by_type('main')
+        return self.df.index.values.tolist()
+
+
+
         
 
-    
-        
+''' 
 
+Method and Params: YahooFinance( Symbol , Range/Duration , interval )
+$symbol is the stock ticker symbol, e.g. AAPL for Apple
+$range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
+$interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m
 
-ytd = YahooFinance('AAPL', '1d', '1m')
-#time frequencies for eq. [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
+Ex : 
+ytd = YahooFinance('AAPL', '1d', '1d')
 quotes = ytd.CompanyQuotes()
 print(quotes)
 
+'''
 
 
 
@@ -190,129 +246,4 @@ print(quotes)
 
 
 
-
-
-# class NameOBJECTS(object):
-    
-#     def __init__(self, raw):
-#         self.raw = raw
-
-#     def getNames(self):    
-#         tableBody = self.raw.findAll('a', attrs={"data-component": "link"})  
-#         data = [i.text for i in tableBody]
-#         return data
-        
-
-# class UrlOBJECTS(object):
-
-#     def __init__(self, baseURL):
-#         self.baseURL = baseURL
-
-#     def createURLs(self, name=[]):
-#         urls = [self.baseURL + i +"/history?p="+i for i in name]
-#         return urls
-        
-
-# class CompanyDirectories(object):
-#     def __init__(self, names):
-#         self.names = names
-
-#     def createDirectory(self):
-
-#         if (gb.os.path.exists(gb.PATH)):
-#             for dr in self.names:
-#                 absPATH = gb.PATH + dr
-#                 gb.os.mkdir(absPATH)
-#                 open(absPATH + "/" + dr + ".json", "w+")
-#         else:
-#             print (
-#                 "The directory of %s does not exist ... now creating the directory" % gb.PATH)
-#             try:
-#                 gb.os.makedirs(gb.PATH)
-#                 for dr in self.names:
-#                     absPATH = gb.PATH + dr
-#                     gb.os.mkdir(absPATH)
-#                     open(absPATH + "/" + dr + ".json", "w+")
-#             except OSError:
-#                 print(
-#                     'failed to create the directory ... please re-run the routine again ...')
-#             else:
-#                 print("Successfully created the directory of %s" %
-#                       gb.PATH)
-#                 self.createDirectory()
-                
-
-
-# scrp_name = ScrapeData(gb.ENDPOINTS[1])
-# __NAMES = NameOBJECTS(scrp_name.reponseContent())
-# __URL = UrlOBJECTS(gb.ENDPOINTS[0])
-# tags = __NAMES.getNames()
-
-# @gb.asyncio.coroutine
-# async def CreateDic():
-#     __DIR =  CompanyDirectories(tags)
-#     create__ =  __DIR.createDirectory()
-#     return create__
- 
-
-# @gb.asyncio.coroutine
-# async def CreateURL():
-#     create_url = __URL.createURLs(tags)
-#     return create_url
-
-
-# class HistoricData:
-
-#     @classmethod
-#     async def call_List(cls, url):
-#         data = []
-#         response = await gb.aiohttp.ClientSession().get(url)
-#         bytesStrdata = await response.read()
-#         strNew = bytesStrdata.decode('utf-8')
-#         raw = gb.BeautifulSoup(strNew, 'html.parser')
-#         tables = raw.find_all('table', attrs={'class': 'W(100%) M(0)'})
-#         table_body = tables[0].find('tbody')
-#         rows = table_body.find_all('tr')
-
-#         for i in range(0, len(rows)):
-#             cols = [ele.text.strip()
-#             for ele in rows[i].find_all('td')]
-#             data.insert(i, cols)
-        
-#         with gb.pd.option_context('display.max_rows', 200, 'display.max_columns', 200):
-#             dataFrame = gb.pd.DataFrame(data, columns=gb.HEADERS).to_json()
-#             print(dataFrame)
-        
-#         for tag in tags:
-#             newPath = gb.PATH + tag + "/" + tag + ".json"
-#             f = open(newPath, 'w')
-#             f.write(dataFrame)
-#             print('done...')
-#             f.close()
-
-#         return data
-
-    
-
-#     @classmethod
-#     async def execute(cls):
-#         urls = await CreateURL()
-#         futures = [HistoricData.call_List(url) for url in urls]
-#         await gb.asyncio.wait(futures)
-
-
-# async def main():
-#     if not (gb.os.path.exists("Companies/")):
-#         await gb.asyncio.gather(CreateDic(), HistoricData.execute(), CreateURL())
-#     else:
-#         gb.os.system("clear")
-#         print('files exist...')
-#         # HistoricData.ddff("")
-#         await gb.asyncio.gather(HistoricData.execute(), CreateURL())
-        
-
-
-# if __name__ == "__main__":
-#     loop = gb.asyncio.get_event_loop()
-#     loop.run_until_complete(main())
  
