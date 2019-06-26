@@ -1,7 +1,7 @@
 
 '''
 Auhtor : Sadik Erisen
-
+Version : 0.1
 '''
 
 import os
@@ -55,15 +55,16 @@ class AbstractComsumer(object):
                     raise (e)
         return  raw         
 
-    def get_DATAFRAME(self):
+    def get_DATAFRAME(self, sdoc:str) -> str:
+        self.dataframe = pd.DataFrame(sdoc)
         return self.dataframe
 
     def HandleDate(self,  d: []) -> None:
         return [str(datetime.datetime.fromtimestamp(t)) for t in d]
 
-    def write_ToCSV(self, path='output.csv'):
-        if not path[-4:] == '.csv':
-            path += '.csv'     
+    def write_ToCSV(self, path='output.json'):
+        if not path[-4:] == '.json':
+            path += '.json'     
         self.dataframe.to_csv(path, index=True)
 
 
@@ -95,24 +96,28 @@ class BarChart_SNP500(AbstractComsumer):
 
 class YahooFinance(AbstractComsumer):
 
-    def __init__(self, symbol, duration, interval):
+    def __init__(self, symbol:str, duration:str, interval:str)-> str:
         super().__init__()
         self.url = ENDPOINTS[0]
-        self.symbol = symbol
-        self.duration = duration
-        self.interval = interval
+        try:
+            self.symbol = symbol
+            self.duration = duration
+            self.interval = interval
+        except (RuntimeError, TypeError, NameError) as e:
+            print(e)    
+   
 
     def create_URL(self):
         ''' 
         $symbol is the stock ticker symbol, e.g. AAPL for Apple
         $range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
         $interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m
-        '''
+        ''' 
         url = ('%s?range=%s&interval=%s' %
-               (self.symbol, self.duration, self.interval))
+            (self.symbol, self.duration, self.interval))
         query = self.url + url
         return query
-
+       
 
     def reponseContent(self):
         result = self.url_RESPONSE(self.create_URL())
@@ -121,38 +126,51 @@ class YahooFinance(AbstractComsumer):
 
     def CompanyMetaData(self):
         raw =  self.reponseContent()
-        CompanyMetaData = raw['chart']['result'][0]['meta']
-        return CompanyMetaData
+        dataFrame = self.get_DATAFRAME(raw)
+        return dataFrame
 
-
-    def CompanyDailyQuotes(self, CompanyQuotes=[]):
-        raw = self.reponseContent()
-        dataFrame = pd.DataFrame(raw)
-        data = dataFrame['chart']['result'][0]
+    def CompanyQuotes(self, CompanyQuotes=[]):
+        raw = self.CompanyMetaData()
+        data = raw['chart']['result'][0]
         newDate = self.HandleDate(data['timestamp'])
-
-        for i in range(0, len(data['timestamp'])):
-            CompanyQuotes.append(
-            {
-                "date": newDate[i],
-                "high": data['indicators']['quote'][0]['high'][i],
-                "low": data['indicators']['quote'][0]['low'][i],
-                "open": data['indicators']['quote'][0]['open'][i],
-                "close": data['indicators']['quote'][0]['close'][i],
-                "volume": data['indicators']['quote'][0]['volume'][i],
-                "adjclose": data['indicators']['adjclose'][0]['adjclose'][i]
-            }
-        )
+        if "m" == self.interval[1]:
+            for i in range(0, len(data['timestamp'])):
+                CompanyQuotes.append(
+                {
+                    "date": newDate[i],
+                    "high": data['indicators']['quote'][0]['high'][i],
+                    "low": data['indicators']['quote'][0]['low'][i],
+                    "open": data['indicators']['quote'][0]['open'][i],
+                    "close": data['indicators']['quote'][0]['close'][i],
+                    "volume": data['indicators']['quote'][0]['volume'][i],
+                }
+            )
+        else :
+            for i in range(0, len(data['timestamp'])):
+                CompanyQuotes.append(
+                    {
+                        "date": newDate[i],
+                        "high": data['indicators']['quote'][0]['high'][i],
+                        "low": data['indicators']['quote'][0]['low'][i],
+                        "open": data['indicators']['quote'][0]['open'][i],
+                        "close": data['indicators']['quote'][0]['close'][i],
+                        "volume": data['indicators']['quote'][0]['volume'][i],
+                        "adjclose": data['indicators']['adjclose'][0]['adjclose'][i]
+                    }
+                )
         company = [data['meta']['symbol'],  CompanyQuotes ]
         return company
+
         
+
     
         
 
 
-ytd = YahooFinance('AAPL', '1d', '1d')
-x = ytd.CompanyDailyQuotes()
-print(x)
+ytd = YahooFinance('AAPL', '1d', '1m')
+#time frequencies for eq. [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max]
+quotes = ytd.CompanyQuotes()
+print(quotes)
 
 
 
