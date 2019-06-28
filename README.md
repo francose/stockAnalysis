@@ -16,9 +16,26 @@ This package includes Stock analysis tools and data extractor by using Yahoo Fin
 # USAGE
 
 ```python
-yf = YahooFinance('AAPL', '1d', '1d')
-quotes = yf.CompanyQuotes()
-print(quotes)
+'''Create an instance of yahoo finance class and pass the parameters as string '''
+yf = YahooFinance('AAPL', '6mo', '1d')
+
+'''Gets all the prices within given time frame'''
+get_quotes = yf.CompanyQuotes()
+
+'''Populates the output data as a json file '''
+write_data = yf.writeOutput()
+
+'''Reads from the output file. Takes only two parameter Path and Data Series 
+   Parameter string should be [High, Low, Open , Close] '''
+r_data = yf.readOutput('output.json', 'close')
+
+'''SMA and EMA methods takes two parameters first param is Data and second is the time frame. '''
+get_sma = yf.sma(r_data, 14)
+get_ema = yf.ema(r_data, 14)
+'''RSI method takes two parameters first param is Data and second is the time frame. '''
+get_rsi = yf.RSI(r_data, 14)
+'''MACD method takes three parameters first param is Data, second is the slows  and third one is the fast'''
+get_macd = yf.macd(r_data, 25, 14)
 ```
 
 
