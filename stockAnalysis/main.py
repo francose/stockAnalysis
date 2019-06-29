@@ -1,7 +1,7 @@
 
 '''
 Auhtor : Sadik Erisen
-Version : 1.3
+Version : 1.4.1
 '''
 
 import os, time, datetime, json ,six
@@ -195,11 +195,16 @@ r_data = yf.readOutput('output.json', 'close')
 
 '''SMA and EMA methods takes two parameters first param is Data and second is the time frame. '''
 get_sma = yf.sma(r_data, 14)
+
+# print(get_sma)
 get_ema = yf.ema(r_data, 14)
+
 '''RSI method takes two parameters first param is Data and second is the time frame. '''
 get_rsi = yf.RSI(r_data, 14)
+
 '''MACD method takes three parameters first param is Data, second is the slows  and third one is the fast'''
 get_macd = yf.macd(r_data, 25, 14)
+
 
 
 
