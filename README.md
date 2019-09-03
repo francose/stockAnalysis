@@ -4,14 +4,12 @@ This package includes Stock analysis tools and data extractor by using Yahoo Fin
 
 - pip install stockAnalysis
 
-
-# Yahoo Finance S&P500 Extrator 
+# Yahoo Finance S&P500 Extrator
 
 - Method and Params: YahooFinance( Symbol , Range/Duration , interval )
 - Symbol is the stock ticker symbol, e.g. 'AAPL' for Apple or 'GOOG' for Google.
 - range/duration is the desired range of the query, allowed parameters are [1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max].
 - interval is the desired interval of the quote, e.g. every 5 minutes, allowed parameters are [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3m].
-
 
 # USAGE
 
@@ -25,7 +23,7 @@ get_quotes = yf.CompanyQuotes()
 '''Populates the output data as a json file '''
 write_data = yf.writeOutput()
 
-'''Reads from the output file. Takes only two parameter Path and Data Series 
+'''Reads from the output file. Takes only two parameter Path and Data Series
    Parameter string should be [High, Low, Open , Close] '''
 r_data = yf.readOutput('output.json', 'close')
 
@@ -38,13 +36,12 @@ get_rsi = yf.RSI(r_data, 14)
 get_macd = yf.macd(r_data, 25, 14)
 ```
 
-
-
-
 # stockAnalysis
+
 Exponential Moving Average and Simple Moving Average.
 
 ### SMA
+
 A simple moving average (SMA) is simply the average of a set of data. nothing fancy. its just used to smooth out the data and reduce the overall noise and short term volatility of a stock.
 
 goal: filter out for stocks that are above the 100 period SMA
@@ -57,11 +54,10 @@ the simple moving average could be used in many different ways depending on the 
 note: different periods will show different long term/ short term trends.
 
 attached is a photo that shows example of different moving averages. as we can see in the image, the shorter the period, the closer the SMA line wraps around the stock price. the larger the period, the smoother the SMA line is, showing very long term trends.
-![SMA](https://github.com/francose/stockAnalysis/blob/master/src/public/SMA.png)
-
-
+![SMA](https://github.com/francose/stockAnalysis/blob/master/stockAnalysis/public/SMA.png)
 
 ### EMA
+
 We plot the EMA line on top of the stock price graph. The EMA acts as a signal of when to buy/sell.
 
 The EMA line usually acts as a line of support or resistance for a stock price. meaning that the EMA is usually either below or above a stock price. when we see a crossover between the stock price and the EMA, we interpret that as a signal of when to buy or sell.
@@ -72,24 +68,24 @@ in mathematical terms, we are looking for the moment where stock value is less t
 
 the moment where the stock price then dips below the ema line, thats an indication to sell/ stop losses.
 
-The EMA (exponential moving average) is a type of moving average that puts more weight on more recent stock prices. which is unlike the simple moving average which views all the data equally. 
+The EMA (exponential moving average) is a type of moving average that puts more weight on more recent stock prices. which is unlike the simple moving average which views all the data equally.
 
-for example, we want to plot a 10 day EMA. The first data point of the EMA line is just the average of the past 10 days. (we have to start somewhere) so add the past 10 closing prices and divide by 10.  
+for example, we want to plot a 10 day EMA. The first data point of the EMA line is just the average of the past 10 days. (we have to start somewhere) so add the past 10 closing prices and divide by 10.
 
 (note: the unit for EMA is a candlestick. the closing price of the candlestick specifically. 1 candlestick is 1 period)
 
 the next data point is where we calculate the EMA.
 
-General Formula: 
-[Closing price - EMA (previous day)] x constant  + EMA (previous day)
+General Formula:
+[Closing price - EMA (previous day)] x constant + EMA (previous day)
 
-the constant =  [ 2 ÷ ( period + 1 ) ] = [2 ÷ (10 + 1)]= 2/11
+the constant = [ 2 ÷ ( period + 1 ) ] = [2 ÷ (10 + 1)]= 2/11
 
-Note: the first data point is just an average. so when we calculate the second data point, we use the first data point(the avg) as the previous day's EMA in the calculation. 
+Note: the first data point is just an average. so when we calculate the second data point, we use the first data point(the avg) as the previous day's EMA in the calculation.
 
 Refer to the google doc shared to see this calculation being used
 
-![EMA](https://github.com/francose/stockAnalysis/blob/master/src/public/EMA.png)
+![EMA](https://github.com/francose/stockAnalysis/blob/master/stockAnalysis/public/EMA.png)
 
 Once we see a cross over with the stock price and the EMA, it not a guarantee that the stock price will continue to go up. its a strong suggestion that there might be a rise/ decline in stock price, but we need to be safe that a strong trend is present.
 
@@ -102,12 +98,10 @@ for more detailed description of the MACD indicator, look over at the MACD board
 OPTION 2: SMA
 another way to validate the strength of the EMA signal/trend is to look at the simple moving average (SMA). the period of the SMA needs to be double the period of the EMA. if the EMA also crosses the SMA, then it's a verified buy or sell. check out the photo for an example.
 
-
-
-![EMA2](https://github.com/francose/stockAnalysis/blob/master/src/public/EMA2.png)
-
+![EMA2](https://github.com/francose/stockAnalysis/blob/master/stockAnalysis/public/EMA2.png)
 
 ### RSI
+
 The equation for the RSI (Relative Strength Index) has multiple parts. be sure to refer to the google doc shared with you all to see how these calculations are used.
 
 General Equation to calculate the RSI is:
@@ -148,7 +142,7 @@ AVG Loss= [Previous avg Loss*(period-1)+current Loss]/period
 
 Overall Formula
 
-RSI day 1: 
+RSI day 1:
 =100 - [100/(1+RS)]
 = 100 - [100/(1+ (AVG gain/AVG Loss) ) ]
 
@@ -159,29 +153,30 @@ RSI day 2-today:
 NOTE: if this is getting confusing, refer to the google spread sheet and see the formula being used
 
 again, the RS is found by dividing the AVG Gain by the AVG Loss
-![RSI](https://github.com/francose/stockAnalysis/blob/master/src/public/RSI.png)
+![RSI](https://github.com/francose/stockAnalysis/blob/master/stockAnalysis/public/RSI.png)
 
 ### MACD
 
 Moving average convergence divergence (MACD) is a trend-following momentum indicator that shows the relationship between two moving averages of prices.
 
-to calculate the MACD: 
+to calculate the MACD:
 we calculate the 12 period EMA of the stock, minus the 26 period EMA. these values are plotted and is called the MACD line. these points are plotted on a separate graph from that of the stock price.
 
 after that, we calculate a 9 period EMA OF THE MACD LINE. this second line is called a "signal line" and is plotted on top of the MACD line.
 
-General Formula: 
-1) MACD
-same concept discussed in the previous EMA board. the first point plotted uses an average, as discussed previously. same mathematical formula for calculating the EMA:
+General Formula:
+
+1. MACD
+   same concept discussed in the previous EMA board. the first point plotted uses an average, as discussed previously. same mathematical formula for calculating the EMA:
 
 MACD = (12 period EMA - 26 peiod ema) =
 [(closing price of last candle - previous EMA)(2/(12+1))+previous EMA] - [(closing price of last candle - previous EMA)(2/(26+1))+previous EMA]
 
-2) signal line: 9 period ema of the MACD line.
-[(last MACD value - previous EMA)*(2/(9+1))+previous EMA]
-points are plotted on top of MACD line
+2. signal line: 9 period ema of the MACD line.
+   [(last MACD value - previous EMA)*(2/(9+1))+previous EMA]
+   points are plotted on top of MACD line
 
 we interpret the crossing of the MACD line and the signal line as validations of whether or buy or sell. look at photos attached for more detail
 look at the photos attached in the EMA board for more verification photos with he MACD line.
 
-![MACD](https://github.com/francose/stockAnalysis/blob/master/src/public/MACD.jpg)
+![MACD](https://github.com/francose/stockAnalysis/blob/master/stockAnalysis/public/MACD.jpg)
